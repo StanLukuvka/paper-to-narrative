@@ -1,6 +1,6 @@
 ---
 name: paper-to-narrative-write
-description: Write final chapters using plan, exemplars, and random style-source chapters for context.
+description: Write final chapters using plan, exemplars, and style-source chapters for tonal context.
 version: 0.1.0
 author: stanl
 license: mit
@@ -32,7 +32,7 @@ Transform each research section into a first draft of narrative prose.
 ## Instructions
 
 1. Read the style source from `workspace/SOURCES/STYLE_SOURCE.md`.
-2. Randomly sample 3 chapters or blocks from the style source. Use a fixed seed (default 42) for reproducibility. These serve as tonal anchors.
+2. Pick 3 chapters or blocks from the style source to use as tonal anchors. If the user wants reproducibility, pick the same ones every time (e.g., first, middle, last, or whatever the CONFIG specifies). These serve as tonal anchors.
 3. Read `workspace/ANALYSIS/selected_exemplars.md`.
 4. For each plan file in `PLAN/chapter_plans/`:
    a. Match it to the corresponding section file in `SECTIONS/` by section number.
@@ -42,7 +42,7 @@ Transform each research section into a first draft of narrative prose.
       - The research section text (truncated to ~2000 words if very long)
       - The rewrite plan body
       - The selected exemplars (truncated to ~1200 words)
-      - The 3 random style-source chapters (truncated to ~3000 words combined)
+      - The 3 style-source chapters (truncated to ~3000 words combined)
    d. Save the full prompt to `DRAFTS/prompts/NN_title_prompt.txt`.
    e. Send the prompt to the LLM and capture the response.
    f. Write the response to `DRAFTS/NN_title_draft.md` with YAML frontmatter:
@@ -60,11 +60,11 @@ Transform each research section into a first draft of narrative prose.
 
 ## Resume Behavior
 
-If running with `--resume`, only skip sections whose draft file has `status: draft`. Regenerate any with `status: pending`.
+If the user says "resume", check `DRAFTS/` for existing draft files. Skip any with `status: draft`. Regenerate any with `status: pending`.
 
-## Test Mode
+## Single Section Mode
 
-If the user specifies a single section number, generate only that section's draft. Useful for prompt iteration.
+If the user asks for a single section (e.g., "write section 3 only"), generate only that section's draft. Useful for prompt iteration.
 
 ## Notes
 
