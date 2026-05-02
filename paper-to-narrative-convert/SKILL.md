@@ -39,6 +39,8 @@ If any check fails, abort with a clear error message. Do not proceed.
 
 ## Instructions
 
+**Idempotency guard:** Before doing any work, check if this step's outputs already exist and the checklist marks it complete. If both are true, skip all work and report: "Step A: Convert: already completed, skipping."
+
 1. Ensure `workspace/SOURCES/` exists. Create it if needed.
 2. Check the file extension of the source:
    - If `.md` or `.markdown`: copy it directly to `workspace/SOURCES/INFO_SOURCE.md`.

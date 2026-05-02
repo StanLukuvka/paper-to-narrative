@@ -34,9 +34,11 @@ Before starting, validate:
 2. Style source exceeds 1000 words. If shorter, warn: "Style source is very short (<1000 words). Results may be poor." but continue.
 3. `workspace/ANALYSIS/` directories exist or can be created.
 
-If STYLE_SOURCE.md is missing, abort: "Step C: STYLE_SOURCE.md not found. Run Step A first."
+If STYLE_SOURCE.md or INFO_SOURCE.md is missing, abort: "Step C: required source not found. Run Step A first."
 
 ## Instructions
+
+**Idempotency guard:** Before doing any work, check if this step's outputs already exist and the checklist marks it complete. If both are true, skip all work and report: "Step C: Analyze: already completed, skipping."
 
 1. Read `workspace/SOURCES/STYLE_SOURCE.md`.
 2. Load config from `workspace/CONFIG/settings.md` (use defaults if missing).

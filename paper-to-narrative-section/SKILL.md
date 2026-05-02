@@ -35,6 +35,8 @@ If INFO_SOURCE.md is missing or empty, abort: "Step B: INFO_SOURCE.md not found 
 
 ## Instructions
 
+**Idempotency guard:** Before doing any work, check if this step's outputs already exist and the checklist marks it complete. If both are true, skip all work and report: "Step B: Section: already completed, skipping."
+
 1. Read `workspace/SOURCES/INFO_SOURCE.md`.
 2. Load config from `workspace/CONFIG/settings.md` (use defaults if missing; see main skill for defaults).
 3. Split the text into sections based on markdown headings (`#`, `##`, `###`).

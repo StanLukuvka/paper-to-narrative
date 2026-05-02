@@ -39,6 +39,8 @@ If any prerequisite is missing, abort with a clear message naming the missing fi
 
 ## Instructions
 
+**Idempotency guard:** Before doing any work, check if this step's outputs already exist and the checklist marks it complete. If both are true, skip all work and report: "Step E: Plan: already completed, skipping."
+
 1. Read every section file from `workspace/SECTIONS/`.
 2. Read `workspace/ANALYSIS/style_profile.md` and `workspace/ANALYSIS/selected_exemplars.md`.
 3. Read `workspace/SOURCES/INFO_SOURCE.md`.

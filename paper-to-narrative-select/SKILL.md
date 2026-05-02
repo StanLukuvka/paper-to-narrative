@@ -35,6 +35,8 @@ If no exemplar files exist, abort: "No exemplars found — run Step C first."
 
 ## Instructions
 
+**Idempotency guard:** Before doing any work, check if this step's outputs already exist and the checklist marks it complete. If both are true, skip all work and report: "Step D: Select: already completed, skipping."
+
 1. Load config from `workspace/CONFIG/settings.md` (use defaults if missing).
 2. Load all exemplar files from `workspace/ANALYSIS/exemplars/`.
 3. Group them by factor.

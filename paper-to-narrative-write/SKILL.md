@@ -42,6 +42,8 @@ If any prerequisite fails, abort with a message naming the missing file or field
 
 ## Instructions
 
+**Idempotency guard:** Before doing any work, check if this step's outputs already exist and the checklist marks it complete. If both are true, skip all work and report: "Step F: Write: already completed, skipping."
+
 1. Read the style source from `workspace/SOURCES/STYLE_SOURCE.md`.
 2. Load config from `workspace/CONFIG/settings.md`.
 3. Select `style_anchor_count` chapters or blocks from the style source using `style_anchor_selection`:
