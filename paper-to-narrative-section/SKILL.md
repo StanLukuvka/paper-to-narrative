@@ -1,6 +1,6 @@
 ---
 name: paper-to-narrative-section
-description: Split INFO_SOURCE.md into topical sections.
+description: "Split INFO_SOURCE.md into topical sections."
 version: 0.1.0
 author: stanl
 license: mit

@@ -1,6 +1,6 @@
 ---
 name: paper-to-narrative-select
-description: Interactive UI to pick best exemplar paragraphs; always keep top 5.
+description: "Interactive UI to pick best exemplar paragraphs; always keep top 5."
 version: 0.1.0
 author: stanl
 license: mit

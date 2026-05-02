@@ -1,9 +1,10 @@
 ---
 name: paper-to-narrative-convert
-description: Convert source document to markdown.
+description: "Convert source document to markdown."
 version: 0.1.0
 author: stanl
 license: mit
+requires_toolsets: [terminal]
 metadata:
   hermes:
     tags: [paper2narrative, convert, markdown]

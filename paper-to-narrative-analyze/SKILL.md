@@ -1,6 +1,6 @@
 ---
 name: paper-to-narrative-analyze
-description: Analyze style source, extract exemplar paragraphs and write style guide.
+description: "Analyze style source, extract exemplar paragraphs and write style guide."
 version: 0.1.0
 author: stanl
 license: mit

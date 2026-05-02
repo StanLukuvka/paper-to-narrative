@@ -1,6 +1,6 @@
 ---
 name: paper-to-narrative-plan
-description: Create rewrite plan: how each research section becomes a narrative chapter.
+description: "Create rewrite plan: how each research section becomes a narrative chapter."
 version: 0.1.0
 author: stanl
 license: mit

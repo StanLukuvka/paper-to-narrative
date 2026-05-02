@@ -1,6 +1,6 @@
 ---
 name: paper-to-narrative-write
-description: Write final chapters using plan, exemplars, and style-source chapters for tonal context.
+description: "Write final chapters using plan, exemplars, and style-source chapters for tonal context."
 version: 0.1.0
 author: stanl
 license: mit
