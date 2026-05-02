@@ -14,7 +14,7 @@ metadata:
 
 ## Purpose
 
-Convert the research paper from any pandoc-supported format into clean markdown and place it in the workspace.
+Convert the nonfiction source from any pandoc-supported format into clean markdown and place it in the workspace.
 
 ## Inputs
 
@@ -23,7 +23,7 @@ Convert the research paper from any pandoc-supported format into clean markdown 
 
 ## Outputs
 
-- `workspace/SOURCES/INFO_SOURCE.md`
+- `workspace/SOURCES/SOURCE.md`
 - `workspace/SOURCES/STYLE_SOURCE.md`
 - `workspace/SOURCES/metadata.md`
 
@@ -43,16 +43,16 @@ If any check fails, abort with a clear error message. Do not proceed.
 
 1. Ensure `workspace/SOURCES/` exists. Create it if needed.
 2. Check the file extension of the source:
-   - If `.md` or `.markdown`: copy it directly to `workspace/SOURCES/INFO_SOURCE.md`.
+   - If `.md` or `.markdown`: copy it directly to `workspace/SOURCES/SOURCE.md`.
    - If `.pdf`: run `pdftotext` to extract text, clean form-feed characters (`\f`), and save as markdown.
-   - Otherwise: run `pandoc -t gfm -o workspace/SOURCES/INFO_SOURCE.md` on the source file.
+   - Otherwise: run `pandoc -t gfm -o workspace/SOURCES/SOURCE.md` on the source file.
 3. Copy the style reference to `workspace/SOURCES/STYLE_SOURCE.md`.
 4. Write `workspace/SOURCES/metadata.md` with YAML frontmatter:
    ```yaml
    ---
    info_source: "path/to/original"
    style_source: "path/to/style"
-   info_md: "workspace/SOURCES/INFO_SOURCE.md"
+   info_md: "workspace/SOURCES/SOURCE.md"
    timestamp: "2026-05-01T14:30:00Z"
    ---
    ```

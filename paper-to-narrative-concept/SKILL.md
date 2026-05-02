@@ -1,6 +1,6 @@
 ---
 name: paper-to-narrative-concept
-description: "Interactive story concept selection: present narrative frames for the research paper and let the user choose."
+description: "Interactive story concept selection: present narrative frames for the nonfiction source and let the user choose."
 version: 0.1.0
 author: stanl
 license: mit
@@ -13,7 +13,7 @@ metadata:
 
 ## Purpose
 
-Before planning individual chapters, choose the overarching narrative frame. The agent reads the research sections and style exemplars, then presents 2-3 distinct story concepts. The user picks one, and that concept seeds every chapter plan.
+Before planning individual chapters, choose the overarching narrative frame. The agent reads the source sections and style exemplars, then presents 2-3 distinct story concepts. The user picks one, and that concept seeds every chapter plan.
 
 ## Inputs
 
@@ -38,14 +38,14 @@ If any prerequisite is missing, abort with a clear message naming the missing fi
 
 **Idempotency guard:** Before doing any work, check if `workspace/CONCEPT/story_concept.md` already exists and the checklist marks Step E complete. If both are true, skip all work and report: "Step E: Concept: already completed, skipping."
 
-1. Read `workspace/SECTIONS/sections_index.md` to understand the paper's structure and flow.
+1. Read `workspace/SECTIONS/sections_index.md` to understand the source's structure and flow.
 2. Read `workspace/ANALYSIS/selected_exemplars.md` and `workspace/ANALYSIS/style_profile.md` to understand the target voice.
-3. Generate 2-3 distinct narrative concepts that frame the research as a story. Each concept must include:
+3. Generate 2-3 distinct narrative concepts that frame the source as a story. Each concept must include:
    - A title (e.g., "The Electric Grove")
    - A one-sentence pitch
    - The narrative perspective (first-person journal, third-person limited, epistolary, etc.)
-   - The setting or framing device (laboratory, field expedition, apprenticeship, etc.)
-   - How the research sections map to the narrative arc (e.g., Introduction = opening scene, Methods = demonstration scene, Results = discovery scene, Discussion = reflection, Conclusion = closing)
+   - The setting or framing device (classroom, field expedition, apprenticeship, memoir, etc.)
+   - How the source sections map to the narrative arc (e.g., Introduction = opening scene, Methods = demonstration scene, Results = discovery scene, Discussion = reflection, Conclusion = closing)
 4. Present the concepts to the user using the `clarify` tool. Ask them to pick one or blend elements from multiple.
 5. Write `workspace/CONCEPT/story_concept.md` with YAML frontmatter:
    ```yaml
@@ -58,7 +58,7 @@ If any prerequisite is missing, abort with a clear message naming the missing fi
    ```
    The body must contain:
    - The full pitch
-   - Narrative arc mapping (which research section becomes which story beat)
+   - Narrative arc mapping (which source section becomes which story beat)
    - Character or perspective notes
    - Tone and style notes drawn from the exemplars
 6. Update `workspace/CHECKLISTS/pipeline_checklist.md`:

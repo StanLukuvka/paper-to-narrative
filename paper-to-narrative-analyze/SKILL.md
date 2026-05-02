@@ -13,12 +13,12 @@ metadata:
 
 ## Purpose
 
-Read the style source and the research paper, then extract candidate exemplar paragraphs representing different stylistic factors. Score each candidate on both style quality and fit to the research paper's content.
+Read the style source and the nonfiction source, then extract candidate exemplar paragraphs representing different stylistic factors. Score each candidate on both style quality and fit to the nonfiction source's content.
 
 ## Inputs
 
 - `workspace/SOURCES/STYLE_SOURCE.md`
-- `workspace/SOURCES/INFO_SOURCE.md`
+- `workspace/SOURCES/SOURCE.md`
 - `workspace/CONFIG/settings.md` (for exemplars_per_factor)
 
 ## Outputs
@@ -32,18 +32,18 @@ Read the style source and the research paper, then extract candidate exemplar pa
 
 Before starting, validate:
 1. `workspace/SOURCES/STYLE_SOURCE.md` exists and is non-empty.
-2. `workspace/SOURCES/INFO_SOURCE.md` exists and is non-empty.
+2. `workspace/SOURCES/SOURCE.md` exists and is non-empty.
 3. Style source exceeds 1000 words. If shorter, warn: "Style source is very short (<1000 words). Results may be poor." but continue.
 4. `workspace/ANALYSIS/` directories exist or can be created.
 
-If STYLE_SOURCE.md or INFO_SOURCE.md is missing, abort: "Step C: required source not found. Run Step A first."
+If STYLE_SOURCE.md or SOURCE.md is missing, abort: "Step C: required source not found. Run Step A first."
 
 ## Instructions
 
 **Idempotency guard:** Before doing any work, check if this step's outputs already exist and the checklist marks it complete. If both are true, skip all work and report: "Step C: Analyze: already completed, skipping."
 
 1. Read `workspace/SOURCES/STYLE_SOURCE.md`.
-2. Read `workspace/SOURCES/INFO_SOURCE.md`.
+2. Read `workspace/SOURCES/SOURCE.md`.
 3. Load config from `workspace/CONFIG/settings.md` (use defaults if missing).
 4. Split the style source into chapters or logical blocks (use `##` headings, or group paragraphs if no headings).
 5. For each chapter/block, write a brief analysis file to `ANALYSIS/style_chapters/chN_analysis.md` covering:
@@ -67,7 +67,7 @@ If STYLE_SOURCE.md or INFO_SOURCE.md is missing, abort: "Step C: required source
    | **character_voice** | First-person or strongly distinctive narration; personality-laden observations |
    | **humor** | Comedic timing; irony; wit; absurd juxtapositions; light-hearted wordplay |
 
-   **fit_to_source** (0.0 to 1.0): How thematically relevant is this paragraph to the research paper? Does it touch on similar subject matter, metaphors, or conceptual territory? A paragraph about underground networks fits a paper on fungal mycelium better than a paragraph about spaceships. Judge by conceptual overlap, not keyword matching.
+   **fit_to_source** (0.0 to 1.0): How thematically relevant is this paragraph to the nonfiction source? Does it touch on similar subject matter, metaphors, or conceptual territory? A paragraph about underground networks fits a paper on fungal mycelium better than a paragraph about spaceships. Judge by conceptual overlap, not keyword matching.
 
 7. For each factor, produce a combined score: `(style_score * 0.6) + (fit_to_source * 0.4)`. Keep the top-scoring `exemplars_per_factor` paragraphs per factor using this combined score. If two paragraphs tie, keep the one with higher `fit_to_source`; if still tied, keep the earlier one.
 
@@ -91,7 +91,7 @@ If STYLE_SOURCE.md or INFO_SOURCE.md is missing, abort: "Step C: required source
 
 ## Notes
 
-- If the style source is very long, you may use a sub-agent via `delegate_task` to process chapters in parallel.
+- If the style source is very long, you may use a sub-agent via `delegate_task` to process chapters in parallel. Default max concurrent children is 3; spawn at most 3 sub-agents at a time.
 - Keep exemplars concise: one paragraph each.
 - A single paragraph can appear under multiple factors if it scores well for each.
-- `fit_to_source` ensures the exemplars are not just stylish, but relevant to what the research paper is actually about.
+- `fit_to_source` ensures the exemplars are not just stylish, but relevant to what the nonfiction source is actually about.

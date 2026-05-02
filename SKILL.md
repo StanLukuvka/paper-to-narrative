@@ -1,6 +1,6 @@
 ---
 name: paper-to-narrative
-description: "Transform dry research papers into engaging narrative prose using a prose style reference. Pure markdown skill-set. Hermes executes every step by reading and writing workspace files."
+description: "Transform dry nonfiction sources into engaging narrative prose using a prose style reference. Pure markdown skill-set. Hermes executes every step by reading and writing workspace files."
 version: 0.1.0
 author: stanl
 license: mit
@@ -15,18 +15,19 @@ metadata:
       - paper-to-narrative-concept
       - paper-to-narrative-plan
       - paper-to-narrative-write
+      - paper-to-narrative-review
 ---
 
 # Paper-to-Narrative
 
-Turn a research paper into readable narrative prose. Feed it a style reference (any novel or prose text) and it rewrites the research in that voice. Hermes executes every step by reading and writing markdown files in a workspace directory.
+Turn a nonfiction source into readable narrative prose. Feed it a style reference (any novel or prose text) and it rewrites the source in that voice. Hermes executes every step by reading and writing markdown files in a workspace directory.
 
 ## How It Works
 
 Seven-step pipeline. Each step reads files from the workspace, performs work, and writes new files back. The workspace is the single source of truth. No hidden state.
 
 ```
-INFO_SOURCE  --A--> SOURCES/INFO_SOURCE.md
+SOURCE  --A--> SOURCES/SOURCE.md
 STYLE_SOURCE --B--> SECTIONS/*.md
                           |
                    C --v   ANALYSIS/ (style analysis + exemplars)
@@ -37,13 +38,15 @@ STYLE_SOURCE --B--> SECTIONS/*.md
                           |
                    F --v   PLAN/ (rewrite blueprints)
                           |
-                   G --v   DRAFTS/ + final output
+                   G --v   DRAFTS/
+                          |
+                   H --v   REVIEW/ + final output
 ```
 
 ## Quick Start
 
 1. Pick a directory and place your files inside it:
-   - `info.pdf` — the research paper
+   - `source.pdf` (or .md, .txt, .docx) — the nonfiction source
    - `style.md` — the prose style reference
 
 2. Tell the agent:
@@ -64,18 +67,19 @@ STYLE_SOURCE --B--> SECTIONS/*.md
 | E | concept | Choose the narrative frame interactively |
 | F | plan | Create rewrite plan per section |
 | G | write | Write narrative chapters |
+| H | review | Quality gate: continuity, style, accuracy |
 
 ## Workspace Structure
 
 ```
 workspace/
 ├── SOURCES/
-│   ├── INFO_SOURCE.md       # converted research paper
+│   ├── SOURCE.md       # converted nonfiction source
 │   ├── STYLE_SOURCE.md      # style reference copy
 │   ├── STYLE_ANCHORS.md     # extracted anchor chapters (trimmed)
 │   └── metadata.md          # run metadata (YAML frontmatter)
 ├── SECTIONS/
-│   ├── 01_introduction.md   # split paper sections
+│   ├── 01_introduction.md   # split source sections
 │   └── sections_index.md
 ├── ANALYSIS/
 │   ├── style_chapters/      # per-chapter breakdowns
@@ -92,6 +96,10 @@ workspace/
 │   ├── prompts/             # saved prompts for audit
 │   ├── 01_introduction_draft.md
 │   └── drafts_index.md
+├── REVIEW/
+│   ├── review_report.md
+│   ├── section_notes/
+│   └── rewrite_requests.md
 ├── CHECKLISTS/
 │   └── pipeline_checklist.md
 └── CONFIG/
@@ -124,8 +132,13 @@ Each step REWRITES its own line in-place (find the line by step name, replace th
 - [X] Step E: Concept
   - started: 2026-05-01T14:36:00Z
   - completed: 2026-05-01T14:38:00Z
-- [ ] Step F: Plan
-- [ ] Step G: Write
+- [X] Step F: Plan
+  - started: 2026-05-01T14:38:00Z
+  - completed: 2026-05-01T14:40:00Z
+- [X] Step G: Write
+  - started: 2026-05-01T14:40:00Z
+  - completed: 2026-05-01T14:45:00Z
+- [ ] Step H: Review
 ```
 
 Rules:
@@ -150,6 +163,8 @@ min_words_per_section: 200
 exemplars_per_factor: 10
 exemplars_to_keep: 5
 truncate_at: paragraph              # paragraph | sentence | char
+fidelity: medium                   # low | medium | high — technical precision
+integration: high                   # low | medium | high — how science drives plot
 ---
 ```
 
@@ -167,6 +182,8 @@ If `settings.md` is missing, use these defaults:
 | exemplars_per_factor | 10 |
 | exemplars_to_keep | 5 |
 | truncate_at | paragraph |
+| fidelity | medium |
+| integration | high |
 
 ### Loading Pattern
 
