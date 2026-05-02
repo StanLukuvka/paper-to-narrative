@@ -12,6 +12,7 @@ metadata:
       - paper-to-narrative-section
       - paper-to-narrative-analyze
       - paper-to-narrative-select
+      - paper-to-narrative-concept
       - paper-to-narrative-plan
       - paper-to-narrative-write
 ---
@@ -22,7 +23,7 @@ Turn a research paper into readable narrative prose. Feed it a style reference (
 
 ## How It Works
 
-Six-step pipeline. Each step reads files from the workspace, performs work, and writes new files back. The workspace is the single source of truth. No hidden state.
+Seven-step pipeline. Each step reads files from the workspace, performs work, and writes new files back. The workspace is the single source of truth. No hidden state.
 
 ```
 INFO_SOURCE  --A--> SOURCES/INFO_SOURCE.md
@@ -32,9 +33,11 @@ STYLE_SOURCE --B--> SECTIONS/*.md
                           |
                    D --v   selected_exemplars.md
                           |
-                   E --v   PLAN/ (rewrite blueprints)
+                   E --v   CONCEPT/story_concept.md
                           |
-                   F --v   DRAFTS/ + final output
+                   F --v   PLAN/ (rewrite blueprints)
+                          |
+                   G --v   DRAFTS/ + final output
 ```
 
 ## Quick Start
@@ -48,7 +51,7 @@ STYLE_SOURCE --B--> SECTIONS/*.md
    Run paper-to-narrative on info.pdf with style.md, output to book.md
    ```
 
-3. The agent runs steps A-F automatically from your current directory.
+3. The agent runs steps A-G automatically from your current directory.
 
 ## Pipeline Steps
 
@@ -58,8 +61,9 @@ STYLE_SOURCE --B--> SECTIONS/*.md
 | B | section | Split paper into topical sections |
 | C | analyze | Analyze style source and extract exemplars |
 | D | select | Pick the best exemplars (interactive or auto) |
-| E | plan | Create rewrite plan per section |
-| F | write | Write narrative chapters |
+| E | concept | Choose the narrative frame interactively |
+| F | plan | Create rewrite plan per section |
+| G | write | Write narrative chapters |
 
 ## Workspace Structure
 
@@ -68,6 +72,7 @@ workspace/
 ├── SOURCES/
 │   ├── INFO_SOURCE.md       # converted research paper
 │   ├── STYLE_SOURCE.md      # style reference copy
+│   ├── STYLE_ANCHORS.md     # extracted anchor chapters (trimmed)
 │   └── metadata.md          # run metadata (YAML frontmatter)
 ├── SECTIONS/
 │   ├── 01_introduction.md   # split paper sections
@@ -77,6 +82,8 @@ workspace/
 │   ├── exemplars/           # candidate paragraphs
 │   ├── selected_exemplars.md
 │   └── style_profile.md
+├── CONCEPT/
+│   └── story_concept.md     # chosen narrative frame
 ├── PLAN/
 │   ├── rewrite_strategy.md
 │   ├── chapter_plans/       # per-section blueprints
@@ -108,11 +115,17 @@ Each step REWRITES its own line in-place (find the line by step name, replace th
 - [X] Step B: Section
   - started: 2026-05-01T14:31:00Z
   - completed: 2026-05-01T14:32:00Z
-- [ ] Step C: Analyze
+- [X] Step C: Analyze
   - started: 2026-05-01T14:33:00Z
-- [ ] Step D: Select
-- [ ] Step E: Plan
-- [ ] Step F: Write
+  - completed: 2026-05-01T14:35:00Z
+- [X] Step D: Select
+  - started: 2026-05-01T14:35:00Z
+  - completed: 2026-05-01T14:36:00Z
+- [X] Step E: Concept
+  - started: 2026-05-01T14:36:00Z
+  - completed: 2026-05-01T14:38:00Z
+- [ ] Step F: Plan
+- [ ] Step G: Write
 ```
 
 Rules:
@@ -178,3 +191,4 @@ If either is missing, the agent stops and reports it.
 - Every file is human-readable markdown.
 - The workspace is the audit trail.
 - Steps can be rerun independently by reloading their skill.
+- The story concept step (E) is the creative anchor. Everything after it follows the chosen frame.
