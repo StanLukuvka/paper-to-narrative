@@ -1,6 +1,6 @@
 # Paper-to-Narrative
 
-A Hermes skill-set that transforms dry research papers into engaging narrative prose using a style reference.
+A Hermes skill-set that transforms dry nonfiction into engaging narrative prose using a style reference.
 
 ## What This Is
 
@@ -16,19 +16,21 @@ hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-nar
 hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-section/SKILL.md
 hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-analyze/SKILL.md
 hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-select/SKILL.md
+hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-concept/SKILL.md
 hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-plan/SKILL.md
 hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-write/SKILL.md
+hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-review/SKILL.md
 ```
 
 ## How to Use
 
 1. Place your source files in a working directory:
-   - `info.pdf` (or .md, .docx, etc.) — the research paper
+   - `source.pdf` (or .md, .docx, etc.) — the nonfiction source
    - `style.md` — the prose style reference
 
 2. Tell the agent:
    ```
-   Run paper-to-narrative on info.pdf with style.md
+   Run paper-to-narrative on source.pdf with style.md
    ```
 
 3. The agent loads `SKILL.md`, creates `workspace/`, and executes steps A-F.
@@ -40,9 +42,11 @@ hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-nar
 | A | convert | Convert source to markdown |
 | B | section | Split into topical sections |
 | C | analyze | Analyze style and extract exemplars |
-| D | select | Pick best exemplars (interactive) |
-| E | plan | Create rewrite blueprints |
-| F | write | Generate narrative chapters |
+| D | select | Pick best exemplars (interactive or auto) |
+| E | concept | Choose the narrative frame interactively |
+| F | plan | Create rewrite blueprints |
+| G | write | Generate narrative chapters |
+| H | review | Quality gate: continuity, style, accuracy |
 
 ## Workspace
 
@@ -52,7 +56,7 @@ Every intermediate state is a human-readable markdown file in `workspace/`:
 - `ANALYSIS/` — style breakdown and exemplars
 - `PLAN/` — rewrite blueprints
 - `DRAFTS/` — generated chapters and saved prompts
-- `CHECKLISTS/` — pipeline progress
+- `CHECKLISTS/` — pipeline checklist
 
 ## Structure
 
@@ -68,9 +72,13 @@ paper-to-narrative/
 │   └── SKILL.md
 ├── paper-to-narrative-select/
 │   └── SKILL.md
+├── paper-to-narrative-concept/
+│   └── SKILL.md
 ├── paper-to-narrative-plan/
 │   └── SKILL.md
-└── paper-to-narrative-write/
+├── paper-to-narrative-write/
+│   └── SKILL.md
+└── paper-to-narrative-review/
     └── SKILL.md
 ```
 
