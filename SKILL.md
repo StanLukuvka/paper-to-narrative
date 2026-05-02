@@ -57,7 +57,7 @@ STYLE_SOURCE --B--> SECTIONS/*.md
 | A | convert | Convert source document to markdown |
 | B | section | Split paper into topical sections |
 | C | analyze | Analyze style source and extract exemplars |
-| D | select | Pick the best exemplars (interactive) |
+| D | select | Pick the best exemplars (interactive or auto) |
 | E | plan | Create rewrite plan per section |
 | F | write | Write narrative chapters |
 
@@ -91,21 +91,79 @@ workspace/
     └── settings.md
 ```
 
+## Checklist Format
+
+`workspace/CHECKLISTS/pipeline_checklist.md` tracks pipeline state. Format is a markdown task list with started/completed timestamps.
+
+Each step REWRITES its own line in-place (find the line by step name, replace the whole line). If the line is missing, append it to the end.
+
+### Example
+
+```markdown
+# Pipeline Checklist
+
+- [X] Step A: Convert
+  - started: 2026-05-01T14:30:00Z
+  - completed: 2026-05-01T14:31:00Z
+- [X] Step B: Section
+  - started: 2026-05-01T14:31:00Z
+  - completed: 2026-05-01T14:32:00Z
+- [ ] Step C: Analyze
+  - started: 2026-05-01T14:33:00Z
+- [ ] Step D: Select
+- [ ] Step E: Plan
+- [ ] Step F: Write
+```
+
+Rules:
+- Set `[ ]` and append `- started: <timestamp>` when a step begins.
+- Change `[ ]` to `[X]` and append `- completed: <timestamp>` when a step finishes successfully.
+- If a step fails, leave `[ ]` and append `- failed: <timestamp>` plus a note on the next line.
+- Timestamps are ISO-8601 UTC (e.g., `2026-05-01T14:30:00Z`).
+
+## Configuration
+
+`workspace/CONFIG/settings.md` stores pipeline settings as YAML frontmatter.
+
+### Schema
+
+```yaml
+---
+style_anchor_count: 3               # how many style chapters to use as anchors
+style_anchor_selection: first_middle_last  # first_middle_last | random | specific
+selection_mode: auto                # auto | interactive — Step D behavior
+max_words_per_section: 2000
+min_words_per_section: 200
+exemplars_per_factor: 10
+exemplars_to_keep: 5
+truncate_at: paragraph              # paragraph | sentence | char
+---
+```
+
+### Defaults
+
+If `settings.md` is missing, use these defaults:
+
+| Key | Default |
+|-----|---------|
+| style_anchor_count | 3 |
+| style_anchor_selection | first_middle_last |
+| selection_mode | auto |
+| max_words_per_section | 2000 |
+| min_words_per_section | 200 |
+| exemplars_per_factor | 10 |
+| exemplars_to_keep | 5 |
+| truncate_at | paragraph |
+
+### Loading Pattern
+
+Each step should load config by reading `workspace/CONFIG/settings.md`, parsing the YAML frontmatter, and merging with the defaults dictionary. If the file does not exist, use defaults only.
+
 ## Running Steps
 
 Load each sub-skill and follow its instructions. The agent tracks progress in `workspace/CHECKLISTS/pipeline_checklist.md`.
 
 To run the full pipeline, load each sub-skill in order and execute its steps. To resume, check the checklist and start from the first unchecked step.
-
-## Configuration
-
-Set in `workspace/CONFIG/settings.md` (YAML frontmatter) or tell the agent directly:
-
-- `style_anchor_count`: how many style-source chapters to use as tonal anchors (default: 3)
-- `max_words_per_section`: upper bound when splitting source (default: 2000)
-- `min_words_per_section`: lower bound when merging tiny sections (default: 200)
-- `exemplars_per_factor`: candidates to extract per style factor (default: 10)
-- `exemplars_to_keep`: minimum exemplars after selection (default: 5)
 
 ## System Dependencies
 
@@ -120,4 +178,3 @@ If either is missing, the agent stops and reports it.
 - Every file is human-readable markdown.
 - The workspace is the audit trail.
 - Steps can be rerun independently by reloading their skill.
-- The agent does not choose the LLM. The user runs Hermes with whatever model they prefer.

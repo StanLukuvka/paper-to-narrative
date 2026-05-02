@@ -21,6 +21,7 @@ Transform each research section into a first draft of narrative prose.
 - `workspace/ANALYSIS/selected_exemplars.md`
 - `workspace/SOURCES/STYLE_SOURCE.md`
 - `workspace/SECTIONS/*.md`
+- `workspace/CONFIG/settings.md` (for style_anchor_count, style_anchor_selection, truncate_at)
 
 ## Outputs
 
@@ -29,23 +30,67 @@ Transform each research section into a first draft of narrative prose.
 - `workspace/DRAFTS/drafts_index.md`
 - Final merged file (e.g., `workspace/book.md`)
 
+## Prerequisites
+
+Before starting, validate:
+1. `workspace/PLAN/chapter_plans/` exists and contains at least one `.md` file.
+2. Every plan file has required YAML frontmatter: `section`, `plan_title`, `frame`.
+3. `workspace/ANALYSIS/selected_exemplars.md` exists.
+4. `workspace/SOURCES/STYLE_SOURCE.md` exists.
+5. `workspace/SECTIONS/` exists with corresponding section files.
+If any prerequisite fails, abort with a message naming the missing file or field.
+
 ## Instructions
 
 1. Read the style source from `workspace/SOURCES/STYLE_SOURCE.md`.
-2. Pick 3 chapters or blocks from the style source to use as tonal anchors. If the user wants reproducibility, pick the same ones every time (e.g., first, middle, last, or whatever the CONFIG specifies). These serve as tonal anchors.
-3. Read `workspace/ANALYSIS/selected_exemplars.md`.
-4. For each plan file in `PLAN/chapter_plans/`:
+2. Load config from `workspace/CONFIG/settings.md`.
+3. Select `style_anchor_count` chapters or blocks from the style source using `style_anchor_selection`:
+   - `first_middle_last` — first chapter, middle chapter, last chapter.
+   - `random` — pick randomly (not seeded; varies per run).
+   - `specific` — use chapters listed in config (not yet implemented; fallback to first_middle_last).
+   These serve as tonal anchors.
+4. Read `workspace/ANALYSIS/selected_exemplars.md`.
+5. For each plan file in `PLAN/chapter_plans/`:
    a. Match it to the corresponding section file in `SECTIONS/` by section number.
    b. Strip any YAML frontmatter from the section text before including it in the prompt.
-   c. Assemble a prompt containing:
-      - The narrative frame from the plan
-      - The research section text (truncated to ~2000 words if very long)
-      - The rewrite plan body
-      - The selected exemplars (truncated to ~1200 words)
-      - The 3 style-source chapters (truncated to ~3000 words combined)
-   d. Save the full prompt to `DRAFTS/prompts/NN_title_prompt.txt`.
-   e. Send the prompt to the LLM and capture the response.
-   f. Write the response to `DRAFTS/NN_title_draft.md` with YAML frontmatter:
+   c. Truncate the section text to respect LLM context limits. Use `truncate_at` setting:
+      - `paragraph` — truncate at paragraph boundary, keep full paragraphs up to limit.
+      - `sentence` — truncate at sentence boundary.
+      - `char` — hard truncate at character count.
+   d. Assemble a prompt using this exact template:
+
+      ```
+      You are a narrative rewriter. Your task is to transform a research section into engaging prose.
+
+      NARRATIVE FRAME:
+      {frame}
+
+      RESEARCH SECTION (to preserve and rewrite):
+      {section_text}
+
+      KEY CLAIMS TO PRESERVE (verbatim facts):
+      {original_concepts}
+
+      STYLE EXEMPLARS (match this voice):
+      {exemplars_text}
+
+      TONAL ANCHORS (style-source chapters for voice reference):
+      {style_anchors}
+
+      RULES:
+      1. Preserve every factual claim from KEY CLAIMS TO PRESERVE.
+      2. Never add information not present in the research section.
+      3. Match sentence rhythm, imagery, and tone to the STYLE EXEMPLARS.
+      4. Use the NARRATIVE FRAME as the scene structure.
+      5. Write in the voice of the TONAL ANCHORS.
+      6. Target approximately {words_target} words.
+
+      Write the narrative chapter now.
+      ```
+
+   e. Save the assembled prompt to `DRAFTS/prompts/NN_title_prompt.txt` for audit.
+   f. Generate the narrative chapter by following the prompt. The agent acts as the writer.
+   g. Write the generated prose to `DRAFTS/NN_title_draft.md` with YAML frontmatter:
       ```yaml
       ---
       section: 1
@@ -53,10 +98,11 @@ Transform each research section into a first draft of narrative prose.
       status: draft
       ---
       ```
-   g. If the LLM call fails, write a placeholder with `status: pending` so the user knows to retry.
-5. When all sections are processed, merge every draft file into the final output file.
-6. Write `DRAFTS/drafts_index.md` listing all drafts and their status.
-7. Mark step F complete in `workspace/CHECKLISTS/pipeline_checklist.md`.
+   h. If generation produces no output, write a placeholder with `status: pending` so the user knows to retry.
+6. When all sections are processed, merge every draft file into the final output file.
+7. Write `DRAFTS/drafts_index.md` listing all drafts and their status.
+8. Update `workspace/CHECKLISTS/pipeline_checklist.md`:
+   - Find/replace the Step F line to `[X]` with started and completed timestamps.
 
 ## Resume Behavior
 
