@@ -13,7 +13,7 @@ metadata:
 
 ## Purpose
 
-Design the narrative transformation before writing. For each research section, decide the narrative frame, style anchors, metaphor ideas, and structural hooks. This step is rule-based; it does not call an LLM.
+Design the narrative transformation before writing. For each research section, decide the narrative frame, style anchors, metaphor ideas, and structural hooks. This step is rule-based;
 
 ## Inputs
 
@@ -83,4 +83,3 @@ If any prerequisite is missing, abort with a clear message naming the missing fi
 
 - Plans are living documents. The user can edit them before running step F.
 - Word targets are guides, not hard constraints.
-- No LLM is used in this step. All extraction is rule-based.
