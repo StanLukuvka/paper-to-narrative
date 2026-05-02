@@ -1,8 +1,6 @@
 ---
 name: paper-to-narrative
-description: >
-  Transform dry research papers into engaging narrative prose using a prose style reference.
-  Pure markdown skill-set. Hermes executes every step by reading and writing workspace files.
+description: "Transform dry research papers into engaging narrative prose using a prose style reference. Pure markdown skill-set. Hermes executes every step by reading and writing workspace files."
 version: 0.1.0
 author: stanl
 license: mit
@@ -41,7 +39,7 @@ STYLE_SOURCE --B--> SECTIONS/*.md
 
 ## Quick Start
 
-1. Place files in a working directory:
+1. Pick a directory and place your files inside it:
    - `info.pdf` — the research paper
    - `style.md` — the prose style reference
 
@@ -50,7 +48,7 @@ STYLE_SOURCE --B--> SECTIONS/*.md
    Run paper-to-narrative on info.pdf with style.md, output to book.md
    ```
 
-3. The agent creates `workspace/` and runs steps A-F automatically.
+3. The agent runs steps A-F automatically from your current directory.
 
 ## Pipeline Steps
 
