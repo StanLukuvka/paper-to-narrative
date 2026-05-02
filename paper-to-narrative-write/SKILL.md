@@ -35,7 +35,7 @@ Transform each source section into a first draft of narrative prose.
 Before starting, validate:
 1. `workspace/PLAN/chapter_plans/` exists and contains at least one `.md` file.
 2. Every plan file has required YAML frontmatter: `section`, `plan_title`, `frame`.
-3. `workspace/ANALYSIS/selected_exemplars.md` exists.
+3. `workspace/ANALYSIS/selected_exemplars.md` exists and contains `selected_by: user` in its YAML frontmatter. If `selected_by` is missing or not `user`, abort: "Step D (Select) must be completed with user input. Run Step D and use the clarify tool."
 4. `workspace/SOURCES/STYLE_SOURCE.md` exists.
 5. `workspace/SECTIONS/` exists with corresponding section files.
 If any prerequisite fails, abort with a message naming the missing file or field.

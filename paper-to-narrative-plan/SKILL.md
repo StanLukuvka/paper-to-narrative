@@ -35,8 +35,9 @@ Design the narrative transformation before writing. For each source section, dec
 Before starting, validate:
 1. `workspace/SECTIONS/` exists and contains at least one `.md` file.
 2. `workspace/ANALYSIS/selected_exemplars.md` exists and is non-empty.
-3. `workspace/ANALYSIS/style_profile.md` exists.
-4. `workspace/CONCEPT/story_concept.md` exists.
+3. `workspace/ANALYSIS/selected_exemplars.md` contains `selected_by: user` in its YAML frontmatter. If this field is missing or set to `auto`, abort: "Step D (Select) must be completed with user input before planning. Run Step D and use the clarify tool."
+4. `workspace/ANALYSIS/style_profile.md` exists.
+5. `workspace/CONCEPT/story_concept.md` exists.
 
 If any prerequisite is missing, abort with a clear message naming the missing file and which step produces it.
 

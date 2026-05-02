@@ -157,7 +157,6 @@ Rules:
 ---
 style_anchor_count: 3               # how many style chapters to use as anchors
 style_anchor_selection: first_middle_last  # first_middle_last | random | specific
-selection_mode: auto                # auto | interactive — Step D behavior
 max_words_per_section: 2000
 min_words_per_section: 200
 exemplars_per_factor: 10
@@ -176,7 +175,6 @@ If `settings.md` is missing, use these defaults:
 |-----|---------|
 | style_anchor_count | 3 |
 | style_anchor_selection | first_middle_last |
-| selection_mode | auto |
 | max_words_per_section | 2000 |
 | min_words_per_section | 200 |
 | exemplars_per_factor | 10 |
@@ -191,9 +189,29 @@ Each step should load config by reading `workspace/CONFIG/settings.md`, parsing 
 
 ## Running Steps
 
-Load each sub-skill and follow its instructions. The agent tracks progress in `workspace/CHECKLISTS/pipeline_checklist.md`.
+Steps fall into two categories: **Automated** and **Human Gate**.
 
-To run the full pipeline, load each sub-skill in order and execute its steps. To resume, check the checklist and start from the first unchecked step.
+| Type | Steps | Behavior |
+|------|-------|----------|
+| Automated | A, B, C, F, G, H | Agent runs these without stopping. Checklist tracks progress. |
+| Human Gate | D, E | Agent MUST stop and use the `clarify` tool. Do not proceed to the next step until the user has responded. |
+
+### Execution Rules
+
+1. Load the sub-skill for the current step.
+2. Follow its instructions exactly.
+3. Update `workspace/CHECKLISTS/pipeline_checklist.md` when the step begins and when it completes.
+4. **For Human Gates (D, E):**
+   - Present options to the user with the `clarify` tool.
+   - After calling `clarify`, STOP. Do not load the next skill.
+   - Wait for the user's response in the next message.
+   - Only after receiving the user's choice, write the output file and mark the step complete.
+   - Then proceed to the next step.
+5. **To resume:** Read the checklist. If Step D or E is marked `[ ]` with a `started` timestamp but no `completed` timestamp, re-run that gate step from the beginning (idempotency guards prevent duplicate work).
+
+### Never Skip a Human Gate
+
+Steps D and E exist because the agent cannot judge style preference or story concept on behalf of the user. If you are tempted to auto-select or auto-generate a concept to save time, do not. Always stop and ask.
 
 ## System Dependencies
 
