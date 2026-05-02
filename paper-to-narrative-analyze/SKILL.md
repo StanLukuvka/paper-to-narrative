@@ -13,11 +13,12 @@ metadata:
 
 ## Purpose
 
-Read the style source and extract candidate exemplar paragraphs representing different stylistic factors.
+Read the style source and the research paper, then extract candidate exemplar paragraphs representing different stylistic factors. Score each candidate on both style quality and fit to the research paper's content.
 
 ## Inputs
 
 - `workspace/SOURCES/STYLE_SOURCE.md`
+- `workspace/SOURCES/INFO_SOURCE.md`
 - `workspace/CONFIG/settings.md` (for exemplars_per_factor)
 
 ## Outputs
@@ -31,8 +32,9 @@ Read the style source and extract candidate exemplar paragraphs representing dif
 
 Before starting, validate:
 1. `workspace/SOURCES/STYLE_SOURCE.md` exists and is non-empty.
-2. Style source exceeds 1000 words. If shorter, warn: "Style source is very short (<1000 words). Results may be poor." but continue.
-3. `workspace/ANALYSIS/` directories exist or can be created.
+2. `workspace/SOURCES/INFO_SOURCE.md` exists and is non-empty.
+3. Style source exceeds 1000 words. If shorter, warn: "Style source is very short (<1000 words). Results may be poor." but continue.
+4. `workspace/ANALYSIS/` directories exist or can be created.
 
 If STYLE_SOURCE.md or INFO_SOURCE.md is missing, abort: "Step C: required source not found. Run Step A first."
 
@@ -41,41 +43,50 @@ If STYLE_SOURCE.md or INFO_SOURCE.md is missing, abort: "Step C: required source
 **Idempotency guard:** Before doing any work, check if this step's outputs already exist and the checklist marks it complete. If both are true, skip all work and report: "Step C: Analyze: already completed, skipping."
 
 1. Read `workspace/SOURCES/STYLE_SOURCE.md`.
-2. Load config from `workspace/CONFIG/settings.md` (use defaults if missing).
-3. Split it into chapters or logical blocks (use `##` headings, or group paragraphs if no headings).
-4. For each chapter/block, write a brief analysis file to `ANALYSIS/style_chapters/chN_analysis.md` covering:
+2. Read `workspace/SOURCES/INFO_SOURCE.md`.
+3. Load config from `workspace/CONFIG/settings.md` (use defaults if missing).
+4. Split the style source into chapters or logical blocks (use `##` headings, or group paragraphs if no headings).
+5. For each chapter/block, write a brief analysis file to `ANALYSIS/style_chapters/chN_analysis.md` covering:
    - Word and paragraph counts
    - Average sentence length
    - Percentage of short sentences (8 words or fewer)
    - Tone words present
    - Whether dialogue occurs
-5. For each chapter/block, scan every paragraph and score it against each factor below. A paragraph can score for multiple factors. Use a simple 0.0-1.0 heuristic: count sentences that match the factor's markers, divided by total sentences in the paragraph.
+6. Read every paragraph in the style source and score it against each factor below. A paragraph can score for multiple factors. Assign two scores per paragraph per factor:
+
+   **style_score** (0.0 to 1.0): How strongly and skillfully does this paragraph exhibit the factor? Judge by reading the paragraph and assessing its craft, not by counting words. Trust your understanding of prose.
 
    | Factor | What to look for |
    |--------|------------------|
-   | **tone** | Mood-setting words (gloomy, serene, tense, joyful); atmospheric descriptions; emotional color |
-   | **rhythm** | Noticeable variation in sentence length within the paragraph; mix of short punchy and long flowing sentences |
-   | **imagery** | Sensory language (sight, sound, smell, touch, taste); concrete metaphors; vivid adjectives |
+   | **tone** | Mood-setting atmosphere; emotional color; atmospheric descriptions |
+   | **rhythm** | Sentence length variation; mix of short punchy and long flowing sentences |
+   | **imagery** | Sensory language; concrete metaphors; vivid descriptive detail |
    | **dialogue** | Quoted speech; naturalistic back-and-forth; distinct speaker voices |
-   | **description** | World-building details; setting exposition; object/place specificity; historical or cultural texture |
-   | **pacing** | Action verbs; short paragraphs; quick scene changes; urgency markers |
-   | **character_voice** | First-person narration; distinctive diction or syntax; internal monologue; personality-laden observations |
+   | **description** | World-building density; setting exposition; object and place specificity |
+   | **pacing** | Action verbs; paragraph length controlling speed; urgency or stillness |
+   | **character_voice** | First-person or strongly distinctive narration; personality-laden observations |
    | **humor** | Comedic timing; irony; wit; absurd juxtapositions; light-hearted wordplay |
 
-6. For each factor, keep the top-scoring `exemplars_per_factor` paragraphs (default 5). If two paragraphs from the same chapter tie on score, keep the earlier one.
-7. Write each kept exemplar to `ANALYSIS/exemplars/exemplar_factor_N.md` with YAML frontmatter:
-   ```yaml
-   ---
-   factor: tone
-   chapter: 5
-   score: 0.85
-   rank: candidate
-   ---
-   <paragraph text>
-   ```
-8. Write `ANALYSIS/style_profile.md` summarizing the voice characteristics.
-9. Write `ANALYSIS/exemplars_index.md` listing all factors and candidate counts.
-10. Update `workspace/CHECKLISTS/pipeline_checklist.md`:
+   **fit_to_source** (0.0 to 1.0): How thematically relevant is this paragraph to the research paper? Does it touch on similar subject matter, metaphors, or conceptual territory? A paragraph about underground networks fits a paper on fungal mycelium better than a paragraph about spaceships. Judge by conceptual overlap, not keyword matching.
+
+7. For each factor, produce a combined score: `(style_score * 0.6) + (fit_to_source * 0.4)`. Keep the top-scoring `exemplars_per_factor` paragraphs per factor using this combined score. If two paragraphs tie, keep the one with higher `fit_to_source`; if still tied, keep the earlier one.
+
+8. Write each kept exemplar to `ANALYSIS/exemplars/exemplar_factor_N.md` with YAML frontmatter:
+    ```yaml
+    ---
+    factor: tone
+    chapter: 5
+    style_score: 0.85
+    fit_to_source: 0.72
+    combined_score: 0.80
+    rank: candidate
+    ---
+    <paragraph text>
+    ```
+
+9. Write `ANALYSIS/style_profile.md` summarizing the voice characteristics.
+10. Write `ANALYSIS/exemplars_index.md` listing all factors and candidate counts.
+11. Update `workspace/CHECKLISTS/pipeline_checklist.md`:
     - Find/replace the Step C line to `[X]` with started and completed timestamps.
 
 ## Notes
@@ -83,3 +94,4 @@ If STYLE_SOURCE.md or INFO_SOURCE.md is missing, abort: "Step C: required source
 - If the style source is very long, you may use a sub-agent via `delegate_task` to process chapters in parallel.
 - Keep exemplars concise: one paragraph each.
 - A single paragraph can appear under multiple factors if it scores well for each.
+- `fit_to_source` ensures the exemplars are not just stylish, but relevant to what the research paper is actually about.
