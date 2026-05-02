@@ -47,17 +47,21 @@ If STYLE_SOURCE.md is missing, abort: "Step C: STYLE_SOURCE.md not found. Run St
    - Percentage of short sentences (8 words or fewer)
    - Tone words present
    - Whether dialogue occurs
-5. Extract candidate exemplar paragraphs for each of these factors:
-   - **tone** — mood-setting atmosphere
-   - **rhythm** — sentence length variation
-   - **imagery** — sensory and descriptive language
-   - **dialogue** — naturalistic speech patterns
-   - **description** — world-building and detail density
-   - **pacing** — action verbs and short paragraphs
-   - **character_voice** — first-person or distinctive speech
-   - **humor** — light or comedic markers
-6. For each candidate, score it with a simple heuristic (0.0 to 1.0) and keep the top `exemplars_per_factor` per factor (default 10).
-7. Write each exemplar to `ANALYSIS/exemplars/exemplar_factor_N.md` with YAML frontmatter:
+5. For each chapter/block, scan every paragraph and score it against each factor below. A paragraph can score for multiple factors. Use a simple 0.0-1.0 heuristic: count sentences that match the factor's markers, divided by total sentences in the paragraph.
+
+   | Factor | What to look for |
+   |--------|------------------|
+   | **tone** | Mood-setting words (gloomy, serene, tense, joyful); atmospheric descriptions; emotional color |
+   | **rhythm** | Noticeable variation in sentence length within the paragraph; mix of short punchy and long flowing sentences |
+   | **imagery** | Sensory language (sight, sound, smell, touch, taste); concrete metaphors; vivid adjectives |
+   | **dialogue** | Quoted speech; naturalistic back-and-forth; distinct speaker voices |
+   | **description** | World-building details; setting exposition; object/place specificity; historical or cultural texture |
+   | **pacing** | Action verbs; short paragraphs; quick scene changes; urgency markers |
+   | **character_voice** | First-person narration; distinctive diction or syntax; internal monologue; personality-laden observations |
+   | **humor** | Comedic timing; irony; wit; absurd juxtapositions; light-hearted wordplay |
+
+6. For each factor, keep the top-scoring `exemplars_per_factor` paragraphs (default 5). If two paragraphs from the same chapter tie on score, keep the earlier one.
+7. Write each kept exemplar to `ANALYSIS/exemplars/exemplar_factor_N.md` with YAML frontmatter:
    ```yaml
    ---
    factor: tone
@@ -76,3 +80,4 @@ If STYLE_SOURCE.md is missing, abort: "Step C: STYLE_SOURCE.md not found. Run St
 
 - If the style source is very long, you may use a sub-agent via `delegate_task` to process chapters in parallel.
 - Keep exemplars concise: one paragraph each.
+- A single paragraph can appear under multiple factors if it scores well for each.
