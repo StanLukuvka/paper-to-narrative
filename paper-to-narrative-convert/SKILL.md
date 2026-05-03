@@ -42,17 +42,18 @@ If any check fails, abort with a clear error message. Do not proceed.
 **Idempotency guard:** Before doing any work, check if this step's outputs already exist and the checklist marks it complete. If both are true, skip all work and report: "Step A: Convert: already completed, skipping."
 
 1. Ensure `workspace/SOURCES/` exists. Create it if needed.
-2. Check the file extension of the source:
+2. Check the file extension of the source. Do NOT ask the user for confirmation. Do NOT present options. Just convert the file.
    - If `.md` or `.markdown`: copy it directly to `workspace/SOURCES/SOURCE.md`.
    - If `.pdf`: run `pdftotext` to extract text, clean form-feed characters (`\f`), and save as markdown.
    - Otherwise: run `pandoc -t gfm -o workspace/SOURCES/SOURCE.md` on the source file.
+   - Prefer `pandoc` for all conversions when available. Fall back to `pdftotext` for PDFs only if `pandoc` is not installed.
 3. Copy the style reference to `workspace/SOURCES/STYLE_SOURCE.md`.
 4. Write `workspace/SOURCES/metadata.md` with YAML frontmatter:
    ```yaml
    ---
-   info_source: "path/to/original"
+   source: "path/to/original"
    style_source: "path/to/style"
-   info_md: "workspace/SOURCES/SOURCE.md"
+   source_md: "workspace/SOURCES/SOURCE.md"
    timestamp: "2026-05-01T14:30:00Z"
    ---
    ```
