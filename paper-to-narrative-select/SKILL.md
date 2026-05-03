@@ -44,14 +44,23 @@ If no exemplar files exist, abort: "No exemplars found — run Step C first."
 
 ### Human Selection (REQUIRED)
 
-5. For each factor, present the top 3-5 candidates to the user using the `clarify` tool:
-   - Show a short preview (first 200 characters) of each candidate.
-   - Show its chapter source and score.
-   - Ask the user which ones best capture this factor.
-6. After calling `clarify`, STOP. Wait for the user's response in the next message. Do not proceed to any other work.
-7. When the user responds, accumulate their selections.
-8. If fewer than `exemplars_to_keep` exemplars are chosen across all factors, automatically add the highest-scoring remaining candidates until the minimum is met.
-9. If the user rejects all candidates for a factor, keep the single highest-scoring candidate for that factor to ensure the pool is not empty.
+5. For each factor, present at least 3 candidates to the user using the `clarify` tool. Never present fewer than 3. If a factor has fewer than 3 candidates total, present all of them and note: "Only N candidates available for this factor."
+
+   Each candidate must include:
+   - **Preview:** The first 200-300 characters, cut at the nearest sentence boundary (period, question mark, or exclamation mark) after the 200th character. Never mid-word.
+   - **Location:** Chapter number and approximate position (e.g., "Chapter 3, early" or "Chapter 7, midpoint"). This lets the user reference the original book if they want more context.
+   - **Score:** The style_score and fit_to_source scores.
+   - **Why it was picked:** One-sentence explanation of what makes this a strong example of the factor (e.g., "Short punchy sentences create urgency" or "Dense sensory metaphors establish mood").
+
+6. Give the user two explicit options:
+   - **Pick from the list:** Select one or more candidates that best capture the factor.
+   - **Reference the book:** If none of the previews feel right, tell the user where to look in the original style source (chapter and approximate position) so they can find their own exemplar and describe it.
+
+7. After calling `clarify`, STOP. Wait for the user's response in the next message. Do not proceed to any other work.
+8. When the user responds, accumulate their selections.
+9. If the user chooses "Reference the book" or rejects all candidates, ask them to describe the passage they found (or the qualities they want) and add their description to the selection pool.
+10. If fewer than `exemplars_to_keep` exemplars are chosen across all factors after user input, automatically add the highest-scoring remaining candidates until the minimum is met.
+11. If the user rejects all candidates for a factor and provides no replacement, keep the single highest-scoring candidate for that factor to ensure the pool is not empty.
 
 ### Output
 
