@@ -41,6 +41,8 @@ STYLE_SOURCE --B--> SECTIONS/*.md
                    G --v   DRAFTS/
                           |
                    H --v   REVIEW/ + final output
+                          |
+                   I --v   BOOK.pdf (Step I: inline export)
 ```
 
 ## Quick Start
@@ -68,6 +70,7 @@ STYLE_SOURCE --B--> SECTIONS/*.md
 | F | plan | Create rewrite plan per section |
 | G | write | Write narrative chapters |
 | H | review | Quality gate: continuity, style, accuracy |
+| I | *(inline)* | Export finalized book to clean PDF (no pipeline metadata) |
 
 ## Workspace Structure
 
@@ -193,7 +196,7 @@ Steps fall into two categories: **Automated** and **Human Gate**.
 
 | Type | Steps | Behavior |
 |------|-------|----------|
-| Automated | A, B, C, F, G, H | Agent runs these without stopping. Checklist tracks progress. |
+| Automated | A, B, C, F, G, H, I | Agent runs these without stopping. Checklist tracks progress. Step I is inline in this file. |
 | Human Gate | D, E | Agent MUST stop and use the `clarify` tool. Do not proceed to the next step until the user has responded. |
 
 ### Execution Rules
@@ -220,6 +223,30 @@ The convert step needs these installed on the host:
 - `pdftotext` from poppler-utils (for PDF extraction)
 
 If either is missing, the agent stops and reports it.
+
+
+## Step I: Export (Inline)
+
+When Step H is complete, produce a final PDF.
+
+1. Read `workspace/DRAFTS/drafts_index.md` for draft order.
+2. Read `workspace/CONCEPT/story_concept.md` and extract `concept_title` for the book title.
+3. Concatenate all drafts in order into a single temporary markdown string.
+4. Strip all non-narrative content:
+   - Remove YAML frontmatter blocks
+   - Remove any line containing `workspace/`, `DRAFTS/`, `PLAN/`, `ANALYSIS/`, `REVIEW/`, `CONFIG/`, `CHECKLISTS/`
+   - Remove internal pipeline headers (`# Draft`, `# Chapter Plan`, etc.)
+5. Add a title page: `# <concept_title>`
+6. Write cleaned markdown to a temp file, then run:
+   ```bash
+   pandoc /tmp/book_clean.md -o workspace/BOOK.pdf --pdf-engine=xelatex -V geometry:margin=1in
+   ```
+   Fall back to default PDF engine if xelatex is missing.
+7. Delete the temp file.
+8. Update `workspace/CHECKLISTS/pipeline_checklist.md`:
+   - Mark Step I `[X]` with timestamps.
+
+Prerequisites: `pandoc` on PATH. If missing, abort and tell the user to install it.
 
 ## Notes
 
