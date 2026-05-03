@@ -22,29 +22,6 @@ metadata:
 
 Turn a nonfiction source into readable narrative prose. Feed it a style reference (any novel or prose text) and it rewrites the source in that voice. Hermes executes every step by reading and writing markdown files in a workspace directory.
 
-## How It Works
-
-Seven-step pipeline. Each step reads files from the workspace, performs work, and writes new files back. The workspace is the single source of truth. No hidden state.
-
-```
-SOURCE  --A--> SOURCES/SOURCE.md
-STYLE_SOURCE --B--> SECTIONS/*.md
-                          |
-                   C --v   ANALYSIS/ (style analysis + exemplars)
-                          |
-                   D --v   selected_exemplars.md
-                          |
-                   E --v   CONCEPT/story_concept.md
-                          |
-                   F --v   PLAN/ (rewrite blueprints)
-                          |
-                   G --v   DRAFTS/
-                          |
-                   H --v   REVIEW/ + final output
-                          |
-                   I --v   BOOK.pdf (Step I: inline export)
-```
-
 ## Quick Start
 
 1. Pick a directory and place your files inside it:
@@ -115,40 +92,21 @@ workspace/
 
 Each step REWRITES its own line in-place (find the line by step name, replace the whole line). If the line is missing, append it to the end.
 
-### Example
+### Format
+
+Markdown task list. Each step is one line with started/completed timestamps.
 
 ```markdown
-# Pipeline Checklist
-
 - [X] Step A: Convert
   - started: 2026-05-01T14:30:00Z
   - completed: 2026-05-01T14:31:00Z
-- [X] Step B: Section
-  - started: 2026-05-01T14:31:00Z
-  - completed: 2026-05-01T14:32:00Z
-- [X] Step C: Analyze
-  - started: 2026-05-01T14:33:00Z
-  - completed: 2026-05-01T14:35:00Z
-- [X] Step D: Select
-  - started: 2026-05-01T14:35:00Z
-  - completed: 2026-05-01T14:36:00Z
-- [X] Step E: Concept
-  - started: 2026-05-01T14:36:00Z
-  - completed: 2026-05-01T14:38:00Z
-- [X] Step F: Plan
-  - started: 2026-05-01T14:38:00Z
-  - completed: 2026-05-01T14:40:00Z
-- [X] Step G: Write
-  - started: 2026-05-01T14:40:00Z
-  - completed: 2026-05-01T14:45:00Z
 - [ ] Step H: Review
 ```
 
 Rules:
-- Set `[ ]` and append `- started: <timestamp>` when a step begins.
-- Change `[ ]` to `[X]` and append `- completed: <timestamp>` when a step finishes successfully.
-- If a step fails, leave `[ ]` and append `- failed: <timestamp>` plus a note on the next line.
-- Timestamps are ISO-8601 UTC (e.g., `2026-05-01T14:30:00Z`).
+- Set `[ ]` + `started` when a step begins. Change to `[X]` + `completed` when it finishes.
+- If a step fails, leave `[ ]` and append `failed: <timestamp>` plus a note.
+- Timestamps are ISO-8601 UTC.
 
 ## Configuration
 
@@ -188,7 +146,7 @@ If `settings.md` is missing, use these defaults:
 
 ### Loading Pattern
 
-Each step should load config by reading `workspace/CONFIG/settings.md`, parsing the YAML frontmatter, and merging with the defaults dictionary. If the file does not exist, use defaults only.
+Read `workspace/CONFIG/settings.md`, parse YAML frontmatter, merge with defaults. If the file does not exist, use defaults only.
 
 ## Running Steps
 

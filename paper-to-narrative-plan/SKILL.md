@@ -39,8 +39,6 @@ Before starting, validate:
 4. `workspace/ANALYSIS/style_profile.md` exists.
 5. `workspace/CONCEPT/story_concept.md` exists and contains `selected_by: user` in its YAML frontmatter. If `selected_by` is missing or not `user`, abort: "Step E (Concept) must be completed with user input before planning. Run Step E and use the clarify tool."
 
-If any prerequisite is missing, abort with a clear message naming the missing file and which step produces it.
-
 ## Instructions
 
 **Idempotency guard:** Before doing any work, check if this step's outputs already exist and the checklist marks it complete. If both are true, skip all work and report: "Step F: Plan: already completed, skipping."
@@ -80,10 +78,9 @@ If any prerequisite is missing, abort with a clear message naming the missing fi
    - Fidelity note: how precise the numbers and methods should be in this section
    - Integration note: how deeply the science should drive the scene's action
 8. Write `PLAN/rewrite_strategy.md` containing overall rules:
-   - Preserve all factual claims (the extracted first sentences)
+   - Preserve all factual claims (never invent, never omit)
    - Translate jargon into consistent metaphors
    - Match sentence rhythm and imagery to selected exemplars
-   - Never add information not in the source section
    - Respect `fidelity` and `integration` settings from config:
      - **fidelity: low** — numbers become approximations ("three quarters" not "74.21%"); methods are sketched not detailed.
      - **fidelity: medium** — key numbers survive in rounded or narrativized form; methods are mentioned but not instruction-manual precise.

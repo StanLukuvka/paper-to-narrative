@@ -34,8 +34,6 @@ Before starting, validate:
 2. `workspace/ANALYSIS/selected_exemplars.md` exists and is non-empty.
 3. `workspace/ANALYSIS/style_profile.md` exists.
 
-If any prerequisite is missing, abort with a clear message naming the missing file.
-
 ## Instructions
 
 **Idempotency guard:** Before doing any work, check if `workspace/CONCEPT/story_concept.md` exists, contains `selected_by: user` in its YAML frontmatter, AND the checklist marks Step E complete. If all three are true, skip all work and report: "Step E: Concept: already completed, skipping."
