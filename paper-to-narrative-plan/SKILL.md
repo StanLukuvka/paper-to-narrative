@@ -13,7 +13,7 @@ metadata:
 
 ## Purpose
 
-Design the narrative transformation before writing. For each source section, decide the narrative frame, style anchors, metaphor ideas, and structural hooks. This step is rule-based;
+Design the narrative transformation before writing. For each source section, decide the narrative frame, style anchors, metaphor ideas, and structural hooks. This step is rule-based.
 
 ## Inputs
 
@@ -90,7 +90,7 @@ Before starting, validate:
      - **integration: high** — the science IS the plot; characters discover results in real time; the reader learns as the characters learn, through action and consequence.
 9. Write `PLAN/chapter_plan_index.md` mapping sections to plan files.
 10. Update `workspace/CHECKLISTS/pipeline_checklist.md`:
-   - Find/replace the Step E line to `[X]` with started and completed timestamps.
+   - Find/replace the Step F line to `[X]` with started and completed timestamps.
 
 ## Notes
 

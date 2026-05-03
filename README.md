@@ -35,7 +35,7 @@ The entire skill-set is pure markdown instructions. No Python, no CLI, no depend
 
 ### Quality Over Speed
 
-There are eight steps, two of which stop for your input. This is slower than asking a single LLM prompt to "rewrite this paper like Hemingway." It is also better. The output is inspectable at every stage. If the style analysis misses something, you can edit it. If the narrative concept is wrong, you reject it before a single chapter is written. You are not debugging a finished draft. You are steering the process.
+There are ten steps, two of which stop for your input. This is slower than asking a single LLM prompt to "rewrite this paper like Hemingway." It is also better. The output is inspectable at every stage. If the style analysis misses something, you can edit it. If the narrative concept is wrong, you reject it before a single chapter is written. You are not debugging a finished draft. You are steering the process.
 
 ## Who This Is For
 
@@ -179,4 +179,4 @@ If either is missing, the agent stops and tells you.
 - The name is a joke that stuck. It handles any nonfiction, not just papers.
 - You can rerun any step independently by reloading its skill.
 - The story concept file is a living document. Edit it before Step F if you change your mind.
-- Review (Step H) generates a report, not auto-rewrites. You read it and decide what to fix.
+- Review (Step H) generates a report and presents options (proceed, rewrite, or halt). Step I handles any rewrites if you choose that option.

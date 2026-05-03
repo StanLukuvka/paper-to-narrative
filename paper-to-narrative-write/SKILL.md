@@ -1,19 +1,19 @@
 ---
 name: paper-to-narrative-write
-description: "Write final chapters using plan, exemplars, and style-source chapters for tonal context."
+description: "Write final chapters using plan, exemplars, and style-source chapters for tonal context. Batched execution: 4-5 sections per turn."
 version: 0.1.0
 author: stanl
 license: mit
 metadata:
   hermes:
-    tags: [paper2narrative, write, generation]
+    tags: [paper2narrative, write, generation, batch]
 ---
 
 # Step G: Write
 
 ## Purpose
 
-Transform each source section into a first draft of narrative prose.
+Transform each source section into a first draft of narrative prose. Process sections in batches of 4-5 to minimize file I/O and context switching.
 
 ## Inputs
 
@@ -39,28 +39,46 @@ Before starting, validate:
 4. `workspace/SOURCES/STYLE_SOURCE.md` exists.
 5. `workspace/CONCEPT/story_concept.md` exists and contains `selected_by: user` in its YAML frontmatter. If `selected_by` is missing or not `user`, abort: "Step E (Concept) must be completed with user input. Run Step E and use the clarify tool."
 6. `workspace/SECTIONS/` exists with corresponding section files.
+
 If any prerequisite fails, abort with a message naming the missing file or field.
 
 ## Instructions
 
 **Idempotency guard:** Before doing any work, check if this step's outputs already exist and the checklist marks it complete. If both are true, skip all work and report: "Step G: Write: already completed, skipping."
 
-1. Read the style source from `workspace/SOURCES/STYLE_SOURCE.md`.
-2. Load config from `workspace/CONFIG/settings.md`.
-3. Select `style_anchor_count` chapters or blocks from the style source using `style_anchor_selection`:
+### Phase 1: Load Shared Context (Read Once)
+
+Read these files ONCE and hold their contents in working memory. Do not re-read them for each section or batch:
+
+1. Read `workspace/SOURCES/STYLE_SOURCE.md`.
+2. Read `workspace/ANALYSIS/selected_exemplars.md`.
+3. Read `workspace/CONCEPT/story_concept.md`.
+4. Load config from `workspace/CONFIG/settings.md`.
+5. Select `style_anchor_count` chapters or blocks from the style source using `style_anchor_selection`:
    - `first_middle_last` — first chapter, middle chapter, last chapter.
    - `random` — pick randomly (not seeded; varies per run).
    - `specific` — use chapters listed in config (not yet implemented; fallback to first_middle_last).
-   These serve as tonal anchors.
-4. Read `workspace/ANALYSIS/selected_exemplars.md`.
-5. For each plan file in `PLAN/chapter_plans/`:
-   a. Match it to the corresponding section file in `SECTIONS/` by section number.
-   b. Strip any YAML frontmatter from the section text before including it in the prompt.
-   c. Truncate the section text to respect LLM context limits. Use `truncate_at` setting:
+   These serve as tonal anchors and are held in memory for all batches.
+
+### Phase 2: Build Batch Queue
+
+1. List all plan files in `workspace/PLAN/chapter_plans/`.
+2. Sort by section number.
+3. Group into batches of 4-5 sections. The final batch may be smaller.
+4. For each plan file, note its corresponding section file path in `workspace/SECTIONS/` (match by section number).
+
+### Phase 3: Process Batches
+
+For each batch:
+
+1. **Read batch inputs:** Read the plan files and section files for all 4-5 sections in this batch. Hold them in working memory.
+2. **Generate chapters:** For each section in the batch:
+   a. Strip any YAML frontmatter from the section text before including it in the prompt.
+   b. Truncate the section text to respect LLM context limits. Use `truncate_at` setting:
       - `paragraph` — truncate at paragraph boundary, keep full paragraphs up to limit.
       - `sentence` — truncate at sentence boundary.
       - `char` — hard truncate at character count.
-   d. Assemble a prompt using this exact template:
+   c. Assemble a prompt using this exact template:
 
       ```
       You are a narrative rewriter. Your task is to transform a source section into engaging prose.
@@ -99,9 +117,17 @@ If any prerequisite fails, abort with a message naming the missing file or field
       Write the narrative chapter now.
       ```
 
-   e. Save the assembled prompt to `DRAFTS/prompts/NN_title_prompt.txt` for audit.
-   f. Generate the narrative chapter by following the prompt. The agent acts as the writer.
-   g. Write the generated prose to `DRAFTS/NN_title_draft.md` with YAML frontmatter:
+   d. Generate the narrative chapter by following the prompt. The agent acts as the writer.
+
+3. **Validate each generated chapter** before writing any files. For each chapter in the batch, verify:
+   - Word count exceeds `min_words_per_section` from settings.
+   - The prose references the narrative frame from `story_concept.md` (e.g., mentions the setting, perspective, or framing device).
+   - The prose preserves at least one key claim from the corresponding plan file.
+   If any check fails, regenerate that chapter before proceeding. Do not write invalid drafts to disk.
+
+4. **Write batch outputs:** Only after all chapters in the batch pass validation:
+   a. Save each assembled prompt to `DRAFTS/prompts/NN_title_prompt.txt` for audit.
+   b. Write each generated chapter to `DRAFTS/NN_title_draft.md` with YAML frontmatter:
       ```yaml
       ---
       section: 1
@@ -109,22 +135,30 @@ If any prerequisite fails, abort with a message naming the missing file or field
       status: draft
       ---
       ```
-   h. If generation produces no output, write a placeholder with `status: pending` so the user knows to retry.
-6. When all sections are processed, merge every draft file into the final output file.
-7. Write `DRAFTS/drafts_index.md` listing all drafts and their status.
-8. Update `workspace/CHECKLISTS/pipeline_checklist.md`:
-   - Find/replace the Step F line to `[X]` with started and completed timestamps.
+   c. If generation produces no output for a section, write a placeholder with `status: pending` so the user knows to retry.
+   d. **Verify each written file:** Read back the file and confirm it is non-empty and contains YAML frontmatter. If empty or malformed, retry once. Only move to the next batch after verification passes.
+
+### Phase 4: Merge and Index
+
+1. When all batches are processed, merge every draft file into the final output file (`workspace/book.md`).
+2. Write `DRAFTS/drafts_index.md` listing all drafts and their status.
+
+### Phase 5: Update Checklist
+
+Update `workspace/CHECKLISTS/pipeline_checklist.md`:
+- Find/replace the Step G line to `[X]` with started and completed timestamps.
 
 ## Resume Behavior
 
-If the user says "resume", check `DRAFTS/` for existing draft files. Skip any with `status: draft`. Regenerate any with `status: pending`.
+If the user says "resume", check `DRAFTS/` for existing draft files. Skip any with `status: draft`. Regenerate any with `status: pending`. Resume from the next unprocessed batch.
 
 ## Single Section Mode
 
-If the user asks for a single section (e.g., "write section 3 only"), generate only that section's draft. Useful for prompt iteration.
+If the user asks for a single section (e.g., "write section 3 only"), treat it as a batch of one. Generate only that section's draft. Useful for prompt iteration.
 
 ## Notes
 
 - All prompts are saved for inspection. The user can copy a prompt, run it through any LLM, and paste the response back into the draft file.
 - Factual accuracy is the highest priority. The narrative frame serves the facts.
 - Truncation prevents exceeding LLM context limits while preserving enough material for the writer to work with.
+- Batching reduces wall time by keeping the agent in writer mode across multiple sections.

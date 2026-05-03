@@ -34,7 +34,7 @@ Turn a nonfiction source into readable narrative prose. Feed it a style referenc
    Run paper-to-narrative on info.pdf with style.md, output to book.md
    ```
 
-3. The agent runs steps A-G automatically from your current directory.
+3. The agent runs the full pipeline from your current directory, stopping at Human Gates D and E for your input.
 
 ## Pipeline Steps
 
