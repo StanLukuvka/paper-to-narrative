@@ -37,7 +37,7 @@ Before starting, validate:
 2. `workspace/ANALYSIS/selected_exemplars.md` exists and is non-empty.
 3. `workspace/ANALYSIS/selected_exemplars.md` contains `selected_by: user` in its YAML frontmatter. If this field is missing or set to `auto`, abort: "Step D (Select) must be completed with user input before planning. Run Step D and use the clarify tool."
 4. `workspace/ANALYSIS/style_profile.md` exists.
-5. `workspace/CONCEPT/story_concept.md` exists.
+5. `workspace/CONCEPT/story_concept.md` exists and contains `selected_by: user` in its YAML frontmatter. If `selected_by` is missing or not `user`, abort: "Step E (Concept) must be completed with user input before planning. Run Step E and use the clarify tool."
 
 If any prerequisite is missing, abort with a clear message naming the missing file and which step produces it.
 
