@@ -16,6 +16,7 @@ metadata:
       - paper-to-narrative-plan
       - paper-to-narrative-write
       - paper-to-narrative-review
+      - paper-to-narrative-rewrite
 ---
 
 # Paper-to-Narrative
@@ -47,7 +48,8 @@ Turn a nonfiction source into readable narrative prose. Feed it a style referenc
 | F | plan | Create rewrite plan per section |
 | G | write | Write narrative chapters |
 | H | review | Quality gate: continuity, style, accuracy |
-| I | *(inline)* | Export finalized book to clean PDF (no pipeline metadata) |
+| I | rewrite | Rewrite flagged sections using review feedback |
+| J | *(inline)* | Export finalized book to clean PDF (no pipeline metadata) |
 
 ## Workspace Structure
 
@@ -73,11 +75,13 @@ workspace/
 │   ├── chapter_plans/       # per-section blueprints
 │   └── chapter_plan_index.md
 ├── DRAFTS/
-│   ├── prompts/             # saved prompts for audit
+│   ├── prompts/             # saved prompts for every chapter
 │   ├── 01_introduction_draft.md
+│   ├── rewrite_log.md       # tracks what was rewritten and why
 │   └── drafts_index.md
 ├── REVIEW/
 │   ├── review_report.md
+│   ├── rewrite_decision.md  # user choice after review
 │   ├── section_notes/
 │   └── rewrite_requests.md
 ├── CHECKLISTS/
@@ -100,7 +104,7 @@ Markdown task list. Each step is one line with started/completed timestamps.
 - [X] Step A: Convert
   - started: 2026-05-01T14:30:00Z
   - completed: 2026-05-01T14:31:00Z
-- [ ] Step H: Review
+- [ ] Step J: Export
 ```
 
 Rules:
@@ -154,7 +158,7 @@ Steps fall into two categories: **Automated** and **Human Gate**.
 
 | Type | Steps | Behavior |
 |------|-------|----------|
-| Automated | A, B, C, F, G, H, I | Agent runs these without stopping. Checklist tracks progress. Step I is inline in this file. |
+| Automated | A, B, C, F, G, H, I, J | Agent runs these without stopping. Checklist tracks progress. Step J is inline in this file. |
 | Human Gate | D, E | Agent MUST stop and use the `clarify` tool. Do not proceed to the next step until the user has responded. |
 
 ### Execution Rules
@@ -183,9 +187,9 @@ The convert step needs these installed on the host:
 If either is missing, the agent stops and reports it.
 
 
-## Step I: Export (Inline)
+## Step J: Export (Inline)
 
-When Step H is complete, produce a final PDF.
+When Step I is complete, produce a final PDF.
 
 1. Read `workspace/DRAFTS/drafts_index.md` for draft order.
 2. Read `workspace/CONCEPT/story_concept.md` and extract `concept_title` for the book title.
@@ -202,7 +206,7 @@ When Step H is complete, produce a final PDF.
    Fall back to default PDF engine if xelatex is missing.
 7. Delete the temp file.
 8. Update `workspace/CHECKLISTS/pipeline_checklist.md`:
-   - Mark Step I `[X]` with timestamps.
+   - Mark Step J `[X]` with timestamps.
 
 Prerequisites: `pandoc` on PATH. If missing, abort and tell the user to install it.
 

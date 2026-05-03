@@ -145,19 +145,34 @@ Wait for both sub-agents to return. Read their reports.
    - Source of finding (Style Adversary or Fidelity Auditor)
    - Specific instruction for the rewrite
 
-### Phase 4: Present to User
+### Phase 4: Present to User and Capture Decision
 
 Present the review report to the user. Show:
 - Overall verdict
 - Number of major and minor issues
 - The most critical 3-5 issues (one-liner each)
 
-If `rewrite_requests.md` exists, ask the user whether to:
-- Proceed to final merge anyway
-- Rewrite specific sections now (ask them to specify which)
-- Halt for manual editing
+Use the `clarify` tool to ask the user to choose:
+- **Proceed to export** — accept drafts as-is and move to Step J
+- **Rewrite flagged sections** — run Step I to regenerate flagged sections
+- **Halt for manual editing** — stop pipeline; user will edit files by hand
 
-Use the `clarify` tool for this decision. Do not auto-rewrite.
+After calling `clarify`, STOP. Wait for the user's response in the next message.
+
+When the user responds, write `workspace/REVIEW/rewrite_decision.md` with YAML frontmatter:
+```yaml
+---
+decision: proceed | rewrite | halt
+timestamp: 2026-05-01T14:30:00Z
+---
+```
+
+The body should contain:
+- The user's choice
+- If "rewrite", list which sections were flagged and why
+- If "halt", note that manual editing is expected
+
+Do not perform any rewrites in this step. Step I handles all rewriting.
 
 ### Phase 5: Update Checklist
 
@@ -170,3 +185,4 @@ Update `workspace/CHECKLISTS/pipeline_checklist.md`:
 - Sub-agents are isolated by design. They review the work as if it arrived from an unknown source.
 - Minor style notes can be addressed in a future revision; factual errors or broken continuity should block release.
 - Both reports are preserved independently so the user can see which issues came from which lens.
+- The decision file lets the pipeline resume correctly: Step I reads it to know whether to rewrite or skip.

@@ -65,6 +65,8 @@ There are eight steps, two of which stop for your input. This is slower than ask
 | F -- Plan | Automated | Build rewrite blueprints per section, using your chosen exemplars and concept |
 | G -- Write | Automated | Generate narrative chapters, one per section, with saved prompts for audit |
 | H -- Review | Automated | Quality gate: check continuity, style consistency, and factual accuracy against the source |
+| I -- Rewrite | Automated | Rewrite flagged sections using review feedback as additional constraints |
+| J -- Export | Automated | Produce clean final PDF with no pipeline metadata |
 
 Steps D and E are the core of the system. They exist because an agent cannot know what you like, and it cannot invent a story frame you believe in. It can only propose. You decide.
 
@@ -82,8 +84,8 @@ Steps D and E are the core of the system. They exist because an agent cannot kno
 5. At Step C, it analyzes the style source and extracts candidate paragraphs.
 6. At Step D, it stops and asks you to pick the best ones. Respond.
 7. At Step E, it stops and asks you to pick a narrative concept. Respond.
-8. Steps F, G, and H run automatically. You get a finished draft in `workspace/DRAFTS/`.
-
+8. Steps F, G, H, and I run automatically. You get a finished draft in `workspace/DRAFTS/`.
+9. Step J exports a clean PDF.
 ## Workspace
 
 Every file is markdown. Every state is inspectable.
@@ -112,9 +114,11 @@ workspace/
 ├── DRAFTS/
 │   ├── prompts/               # saved prompts for every chapter
 │   ├── 01_introduction_draft.md
+│   ├── rewrite_log.md         # tracks what was rewritten and why
 │   └── drafts_index.md
 ├── REVIEW/
 │   ├── review_report.md       # continuity, style, accuracy checks
+│   ├── rewrite_decision.md    # user choice after review
 │   ├── section_notes/
 │   └── rewrite_requests.md
 ├── CHECKLISTS/
@@ -159,6 +163,7 @@ hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-nar
 hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-plan/SKILL.md
 hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-write/SKILL.md
 hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-review/SKILL.md
+hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-rewrite/SKILL.md
 ```
 
 ## System Dependencies
