@@ -65,6 +65,8 @@ Spawn two leaf sub-agents using `delegate_task`. Do not review the drafts yourse
 - Style Adversary gets prose and style targets, but NOT the source material.
 - Fidelity Auditor gets source material and drafts, but NOT style targets.
 
+**Batching rule:** If there are more than 7 drafts, split them into multiple parallel sub-agents per auditor type (e.g., 3 Style Adversaries each reviewing 5-7 sections). Do not assign all drafts to a single sub-agent. See the main skill's "Batch Size Guidance" for the file-size heuristic. When splitting, use the actual filenames discovered on disk; do not hardcode filenames in sub-agent prompts.
+
 #### Sub-Agent 1: Style Adversary
 
 **Goal:** Review all drafts for prose craft, voice consistency, narrative continuity, and worldbuilding depth.
@@ -80,7 +82,7 @@ Spawn two leaf sub-agents using `delegate_task`. Do not review the drafts yourse
 
 
 **Instructions for the sub-agent:**
-1. Read every draft file.
+1. Read every draft file in your assigned batch.
 2. Read the style exemplars and style profile.
 3. Read the story concept and rewrite strategy.
 4. For each draft, assess:
@@ -88,10 +90,12 @@ Spawn two leaf sub-agents using `delegate_task`. Do not review the drafts yourse
    - **Narrative Continuity:** Do characters recur with consistent names and roles? Is there a through-line of discovery? Does each section connect to the next?
    - **Style Fidelity:** Does the prose rhythm, dialogue patterns, and tone match the selected exemplars? Flag passages that feel flat, too modern, too technical, or tonally off.
    - **Worldbuilding Depth:** Is the setting lived-in with its own traditions and history, or is it a surface translation? Flag one-to-one swaps that could be deepened.
-5. Write `workspace/REVIEW/style_adversary_report.md` with:
+5. Write a batch report file with:
    - Per-draft notes (section number, title, issue category, severity: minor/major)
    - Cross-cutting issues (metaphor drift, tonal inconsistency, etc.)
    - Overall verdict: pass, pass with notes, or needs rewrite
+
+**Batch size rule:** Never assign more than 5-7 sections to a single style adversary sub-agent. See the main skill's "Batch Size Guidance" for the file-size heuristic.
 
 #### Sub-Agent 2: Fidelity Auditor
 
@@ -106,28 +110,33 @@ Spawn two leaf sub-agents using `delegate_task`. Do not review the drafts yourse
 
 
 **Instructions for the sub-agent:**
-1. Read every draft file.
-2. Read the source material (`workspace/SOURCES/SOURCE.md`).
-3. Read the chapter plans to know which claims each section was supposed to preserve.
-4. For each draft, cross-check:
+1. Read the drafts index to understand the mapping between sections.
+2. Read every draft file in your assigned batch.
+3. Read the corresponding source material sections for your batch.
+4. Read the chapter plans for your batch.
+5. For each draft, cross-check:
    - Every numerical value, percentage, date, and measurement
    - Every proper name (person, place, organization, species, chemical, etc.)
    - Every figure, table reference, and citation
    - Every process step, method, and protocol description
    - Every causal claim ("X causes Y", "A leads to B")
-5. Flag:
+6. Flag:
    - **Missing data:** numbers or claims present in the source but absent from the draft
    - **Altered data:** values changed from the source (even rounding without explicit fidelity allowance)
    - **Hallucinated data:** details in the draft not found in the source
    - **Distorted causality:** relationships misrepresented or oversimplified
-6. Write `workspace/REVIEW/fidelity_auditor_report.md` with:
+7. Write a batch report file with:
    - Per-draft notes (section number, title, issue category, severity: minor/major)
    - A categorized list of all factual deviations
    - Overall verdict: pass, pass with notes, or needs rewrite
 
+**Batch size rule:** Never assign more than 5-7 sections to a single fidelity auditor sub-agent. If there are more drafts, split them into multiple parallel sub-agents. See the main skill's "Batch Size Guidance" for the file-size heuristic.
+
 ### Phase 3: Merge Reports (Main Agent)
 
-Wait for both sub-agents to return. Read their reports.
+Wait for all sub-agents to return. Read their reports.
+
+**If sub-agents were batched:** There will be multiple report files (e.g., `fidelity_batch_01.md`, `fidelity_batch_02.md`, `style_batch_01.md`, etc.). Read all of them and merge their findings into a single coherent report.
 
 1. Write per-section merged notes to `workspace/REVIEW/section_notes/NN_title_notes.md`:
    - Combine style and fidelity notes for each draft into one file
@@ -135,8 +144,8 @@ Wait for both sub-agents to return. Read their reports.
 2. Write `workspace/REVIEW/review_report.md`:
    - YAML frontmatter with overall verdict and issue counts
    - Executive summary
-   - Style Adversary summary (link to full report)
-   - Fidelity Auditor summary (link to full report)
+   - Style Adversary summary (link to full report or batch reports)
+   - Fidelity Auditor summary (link to full report or batch reports)
    - Cross-cutting concerns (issues both sub-agents flagged independently)
    - Recommended fixes, organized by priority
 3. If any section has major issues from either sub-agent, write `workspace/REVIEW/rewrite_requests.md` listing:

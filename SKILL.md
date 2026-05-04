@@ -49,7 +49,43 @@ Turn a nonfiction source into readable narrative prose. Feed it a style referenc
 | G | write | Write narrative chapters |
 | H | review | Quality gate: continuity, style, accuracy |
 | I | rewrite | Rewrite flagged sections using review feedback |
-| J | *(inline)* | Export finalized book to clean PDF (no pipeline metadata) |
+| J | export | Export finalized book to clean PDF (see Step J section below) |
+
+## Batch Size Guidance
+
+Different steps have different optimal batch sizes depending on whether they use sub-agents and how large the source files are.
+
+### File Size Heuristic
+Before batching, measure the average section size:
+```bash
+# In workspace/SECTIONS/ or workspace/DRAFTS/
+total=$(cat *.md | wc -c)
+count=$(ls *.md | wc -l)
+avg=$((total / count))
+echo "Average section size: $avg bytes"
+```
+
+Use this to determine batch size:
+
+| Average Size | Write Batch | Audit Batch | Rewrite Batch |
+|--------------|-------------|-------------|---------------|
+| < 3 KB | 10-15 sections | 5-7 sections | 5-8 sections |
+| 3-6 KB | 8-10 sections | 4-5 sections | 3-5 sections |
+| 6-10 KB | 5-7 sections | 3-4 sections | 2-3 sections |
+| > 10 KB | 3-5 sections | 2-3 sections | 1-2 sections |
+
+**Why this matters:** Sub-agents (used in Step H audit) have a fixed timeout (typically 600s) and must read all files before producing output. Large batches exceed this. Direct agent work (Step G write, Step I rewrite) can use larger batches because the agent streams output without sub-agent overhead.
+
+### Sub-Agent vs Direct Work
+- **Sub-agent steps (Step H audit):** Always use the smaller batch sizes. Sub-agents are isolated and cannot resume partial work. If a batch times out, the entire batch is lost.
+- **Direct steps (Step G write, Step I rewrite):** Use larger batch sizes. If one section fails, the agent can retry just that section.
+- **When in doubt:** Start with smaller batches and increase after the first batch succeeds.
+
+### File Discovery Rule
+Never hardcode exact filenames in sub-agent prompts or batch instructions. Filenames may vary based on section titles. Instead:
+1. List files with `ls` or `search_files(target='files')` to discover actual names.
+2. Pass the discovered list to the sub-agent or batch processor.
+3. If a sub-agent reports "file not found," it has likely been given an outdated filename. Regenerate the file list from disk.
 
 ## Workspace Structure
 
@@ -86,8 +122,9 @@ workspace/
 │   └── rewrite_requests.md
 ├── CHECKLISTS/
 │   └── pipeline_checklist.md
-└── CONFIG/
-    └── settings.md
+├── CONFIG/
+│   └── settings.md
+└── REWRITE_BRIEF.md         # master brief for rewrite step (tone, fidelity notes)
 ```
 
 ## Checklist Format
@@ -195,14 +232,23 @@ When Step I is complete, produce a final PDF.
    - Remove any line containing `workspace/`, `DRAFTS/`, `PLAN/`, `ANALYSIS/`, `REVIEW/`, `CONFIG/`, `CHECKLISTS/`
    - Remove internal pipeline headers (`# Draft`, `# Chapter Plan`, etc.)
 5. Add a title page: `# <concept_title>`
-6. Write cleaned markdown to a temp file, then run:
+6. Write cleaned markdown to a temp file.
+7. Generate PDF using the **weasyprint path** (preferred):
+   ```bash
+   pandoc /tmp/book_clean.md -t html5 --wrap=none -o /tmp/body.html
+   # Then wrap body.html in styled HTML with CSS (font, margins, page size)
+   # Use a Python script to inject CSS and generate /tmp/styled.html
+   weasyprint /tmp/styled.html workspace/BOOK.pdf
+   ```
+   This path produces styled PDFs without requiring a LaTeX installation.
+8. **Fallback:** If weasyprint is not installed, try:
    ```bash
    pandoc /tmp/book_clean.md -o workspace/BOOK.pdf --pdf-engine=xelatex -V geometry:margin=1in
    ```
-   Fall back to default PDF engine if xelatex is missing.
-7. Delete the temp file.
-8. Update `workspace/CHECKLISTS/pipeline_checklist.md`:
-   - Mark Step J `[X]` with timestamps.
+   If xelatex is also missing, abort and tell the user to install either weasyprint (`pip install weasyprint`) or a TeX distribution.
+9. Delete temp files.
+10. Update `workspace/CHECKLISTS/pipeline_checklist.md`:
+    - Mark Step J `[X]` with timestamps.
 
 Prerequisites: `pandoc` on PATH. If missing, abort and tell the user to install it.
 

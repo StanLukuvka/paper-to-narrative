@@ -12,7 +12,7 @@ metadata:
 
 ## Purpose
 
-Rewrite flagged draft sections using review feedback as additional constraints. Process sections in batches of 4-5 to minimize file I/O and context switching.
+Rewrite flagged draft sections using review feedback as additional constraints. The agent performs rewrites **directly** rather than delegating to sub-agents, because voice-sensitive narrative prose requires the agent to maintain tonal continuity across sections.
 
 ## Inputs
 
@@ -59,55 +59,41 @@ Read these files ONCE and hold their contents in working memory. Do not re-read 
 6. Read `workspace/CONCEPT/story_concept.md`.
 7. Load config from `workspace/CONFIG/settings.md`.
 8. Build a rewrite queue: a list of sections that need rewriting, with their associated issues.
+9. Write `workspace/REWRITE_BRIEF.md` with:
+   - Narrative frame and character notes from `story_concept.md`
+   - Prose rules (sentence variation, sensory details, dialogue, etc.)
+   - Metaphor system reminders
+   - Fidelity notes from the review (e.g., "Add missing normative rule X to Section Y")
+   - Sections to rewrite, organized by priority
+   This brief is shared across all batches and serves as the master reference for tonal consistency.
 
 ### Phase 2: Build Batch Queue
 
 1. Sort the rewrite queue by section number.
-2. Group into batches of 4-5 sections. The final batch may be smaller.
+2. Group into batches based on file size. See the main skill's "Batch Size Guidance" table. For rewrite (direct agent work), use the "Rewrite Batch" column.
 3. For each section, note its corresponding plan file and section notes file paths.
+4. Discover actual filenames on disk using `ls` or `search_files(target='files')`. Do not hardcode filenames.
 
-### Phase 3: Process Batches
+### Phase 3: Process Batches (Direct Agent Rewrite)
 
 For each batch:
 
-1. **Read batch inputs:** Read the draft files, plan files, and section notes for all 4-5 sections in this batch. Hold them in working memory.
-2. **Generate rewrites:** For each section in the batch:
-   a. Assemble a rewrite prompt using the Step G template **with the following additions**:
+1. **Read batch inputs:** Read the draft files, plan files, and section notes for all sections in this batch. Hold them in working memory.
+2. **Write a rewrite brief** to `workspace/REWRITE_BRIEF.md` (if it does not already exist) containing:
+   - Narrative frame and character notes from `story_concept.md`
+   - Prose rules (sentence variation, sensory details, dialogue, etc.)
+   - Metaphor system reminders
+   - Fidelity notes from the review (e.g., "Add cache invalidation rule to Section 19")
+   This brief is shared across all batches.
+3. **Generate rewrites:** For each section in the batch:
+   a. Read the current draft directly.
+   b. Rewrite it in-place, preserving all technical accuracy while applying the prose rules from the brief.
+   c. Address every issue listed in the section notes for this draft.
+   d. Overwrite the original file (or write to `NN_title_draft_v2.md` if you want to preserve originals).
 
-      ```
-      REWRITE INSTRUCTIONS (from review):
-      {specific_issues_for_this_section}
+**Why direct rewrite instead of sub-agents:** Sub-agents are isolated and cannot maintain tonal continuity across sections. They also time out on voice-sensitive creative work. The direct agent has full access to the brief, exemplars, and previously rewritten sections, allowing consistent voice.
 
-      CONSTRAINTS:
-      - Address every issue listed above.
-      - Do not introduce new factual claims not present in the source.
-      - Preserve the narrative frame and character voice.
-      - Match the style exemplars more closely than the previous draft.
-      ```
-
-   b. Generate the rewritten narrative chapter by following the prompt. The agent acts as the writer.
-
-3. **Validate each generated chapter** before writing any files. For each chapter in the batch, verify:
-   - Word count exceeds `min_words_per_section` from settings.
-   - The prose references the narrative frame from `story_concept.md`.
-   - The prose preserves at least one key claim from the corresponding plan file.
-   - Every issue from the review feedback is visibly addressed in the new draft.
-   If any check fails, regenerate that chapter before proceeding. Do not write invalid drafts to disk.
-
-4. **Write batch outputs:** Only after all chapters in the batch pass validation:
-   a. Save each assembled prompt to `workspace/DRAFTS/prompts/NN_title_rewrite_prompt.txt` for audit.
-   b. Write each rewritten chapter to `workspace/DRAFTS/NN_title_draft_v2.md` with YAML frontmatter:
-      ```yaml
-      ---
-      section: 1
-      plan_title: "The First Lesson"
-      status: draft-v2
-      rewritten_from: "NN_title_draft.md"
-      rewrite_reason: "{summary_of_issues}"
-      ---
-      ```
-   c. If generation produces no output for a section, write a placeholder with `status: pending`.
-   d. **Verify each written file:** Read back the file and confirm it is non-empty and contains YAML frontmatter. If empty or malformed, retry once. Only move to the next batch after verification passes.
+**Pacing:** If a batch contains many large sections (>10KB each), process them sequentially rather than trying to hold all in memory at once. Read one, rewrite one, write one, then move to the next.
 
 ### Phase 4: Update Drafts Index and Log
 

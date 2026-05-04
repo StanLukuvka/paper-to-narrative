@@ -64,15 +64,18 @@ Read these files ONCE and hold their contents in working memory. Do not re-read 
 
 1. List all plan files in `workspace/PLAN/chapter_plans/`.
 2. Sort by section number.
-3. Group into batches of 4-5 sections. The final batch may be smaller.
-4. For each plan file, note its corresponding section file path in `workspace/SECTIONS/` (match by section number).
+3. Measure average section size in `workspace/SECTIONS/` using the file-size heuristic from the main skill's "Batch Size Guidance". Use the "Write Batch" column to determine batch size.
+4. Group into batches accordingly. The final batch may be smaller.
+5. For each plan file, note its corresponding section file path in `workspace/SECTIONS/` (match by section number).
+6. Discover actual filenames on disk. Do not hardcode them.
 
 ### Phase 3: Process Batches
 
 For each batch:
 
-1. **Read batch inputs:** Read the plan files and section files for all 4-5 sections in this batch. Hold them in working memory.
-2. **Generate chapters:** For each section in the batch:
+1. **Read batch inputs:** Read the plan files and section files for all sections in this batch. Hold them in working memory.
+2. **Re-inject narrative frame periodically:** If processing more than 8 sections in a single run, re-read `workspace/CONCEPT/story_concept.md` and `workspace/ANALYSIS/selected_exemplars.md` every 6-8 sections. This prevents voice collapse in homogeneous section runs (e.g., long blocks of header definitions or method descriptions).
+3. **Generate chapters:** For each section in the batch:
    a. Strip any YAML frontmatter from the section text before including it in the prompt.
    b. Truncate the section text to respect LLM context limits. Use `truncate_at` setting:
       - `paragraph` — truncate at paragraph boundary, keep full paragraphs up to limit.
