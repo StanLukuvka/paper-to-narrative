@@ -23,7 +23,7 @@ You give it two things:
 1. **A nonfiction source** — research paper, technical report, biography, documentary transcript, anything with facts and structure
 2. **A prose style reference** — a novel, memoir, or short story collection whose voice you want to borrow (the full text, or at minimum 3–4 representative chapters)
 
-It produces a narrative version of the source: written in the style of the reference, accurate to the original facts, structured as a readable story. Depending on source length, expect a full run to take 30–150 minutes and produce a draft of roughly the same word count as the source.
+It produces a narrative version of the source: written in the style of the reference, accurate to the original facts, structured as a readable story. Depending on source length, expect a full run to take 60–300 minutes and produce a draft of roughly the same word count as the source. Time is highly varient on complexity, and size of both texts.
 
 ---
 
@@ -180,32 +180,25 @@ You can edit any file and resume. The checklist tells the agent where to pick up
 
 ## Installation
 
-```bash
-# Install all skills in one pass
-for skill in \
-  "" \
-  "paper-to-narrative-convert" \
-  "paper-to-narrative-section" \
-  "paper-to-narrative-analyze" \
-  "paper-to-narrative-select" \
-  "paper-to-narrative-concept" \
-  "paper-to-narrative-plan" \
-  "paper-to-narrative-write" \
-  "paper-to-narrative-review" \
-  "paper-to-narrative-rewrite"; do
-  base="https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main"
-  path="${skill:+$skill/}SKILL.md"
-  hermes skills install "$base/$path"
-done
-```
-
-Or install individually if you only need specific steps:
+### Install from the flattened repo. Each sub-skill is self-contained.
 
 ```bash
 hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/SKILL.md
 hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-convert/SKILL.md
-# ... and so on
+hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-section/SKILL.md
+hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-analyze/SKILL.md
+hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-select/SKILL.md
+hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-concept/SKILL.md
+hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-plan/SKILL.md
+hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-write/SKILL.md
+hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-review/SKILL.md
+hermes skills install https://raw.githubusercontent.com/StanLukuvka/paper-to-narrative/main/paper-to-narrative-rewrite/SKILL.md
 ```
+
+### Settings to configure
+
+- Increase the delegate_task timeout for agents to an amount greater than 10 minutes or else its likely it will time out.
+
 
 ---
 
