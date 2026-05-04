@@ -127,8 +127,6 @@ min_words_per_section: 200
 exemplars_per_factor: 10
 exemplars_to_keep: 5
 truncate_at: paragraph              # paragraph | sentence | char
-fidelity: medium                   # low | medium | high — technical precision
-integration: high                   # low | medium | high — how science drives plot
 ---
 ```
 
@@ -145,8 +143,6 @@ If `settings.md` is missing, use these defaults:
 | exemplars_per_factor | 10 |
 | exemplars_to_keep | 5 |
 | truncate_at | paragraph |
-| fidelity | medium |
-| integration | high |
 
 ### Loading Pattern
 

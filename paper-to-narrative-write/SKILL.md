@@ -21,7 +21,7 @@ Transform each source section into a first draft of narrative prose. Process sec
 - `workspace/ANALYSIS/selected_exemplars.md`
 - `workspace/SOURCES/STYLE_SOURCE.md`
 - `workspace/SECTIONS/*.md`
-- `workspace/CONFIG/settings.md` (for style_anchor_count, style_anchor_selection, truncate_at, fidelity, integration)
+- `workspace/CONFIG/settings.md` (for style_anchor_count, style_anchor_selection, truncate_at)
 
 ## Outputs
 
@@ -105,14 +105,8 @@ For each batch:
       4. Use the NARRATIVE FRAME as the scene structure.
       5. Write in the voice of the TONAL ANCHORS.
       6. Target approximately {words_target} words.
-      7. FIDELITY LEVEL: {fidelity}
-         - low: approximate numbers, sketch methods, prioritize flow over precision
-         - medium: round key figures, mention methods without full detail
-         - high: keep exact numbers intact, methods stay precise and traceable
-      8. INTEGRATION LEVEL: {integration}
-         - low: story decorates the explanation; characters observe
-         - medium: story and science interleave; characters discuss findings
-         - high: the science IS the plot; characters discover in real time; reader learns through action
+      7. Round key figures, mention methods without full detail
+      8. The science IS the plot; characters discover in real time; reader learns through action
 
       Write the narrative chapter now.
       ```

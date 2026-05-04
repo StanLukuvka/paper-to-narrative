@@ -22,7 +22,7 @@ Design the narrative transformation before writing. For each source section, dec
 - `workspace/ANALYSIS/selected_exemplars.md`
 - `workspace/CONCEPT/story_concept.md`
 - `workspace/SOURCES/SOURCE.md` (to extract key claims)
-- `workspace/CONFIG/settings.md` (for fidelity and integration)
+- `workspace/CONFIG/settings.md`
 
 ## Outputs
 
@@ -75,19 +75,10 @@ Before starting, validate:
    - Opening hook suggestion
    - Closing hook suggestion
    - Word target (plus or minus 10 percent of original section length)
-   - Fidelity note: how precise the numbers and methods should be in this section
-   - Integration note: how deeply the science should drive the scene's action
 8. Write `PLAN/rewrite_strategy.md` containing overall rules:
    - Preserve all factual claims (never invent, never omit)
    - Translate jargon into consistent metaphors
    - Match sentence rhythm and imagery to selected exemplars
-   - Respect `fidelity` and `integration` settings from config:
-     - **fidelity: low** — numbers become approximations ("three quarters" not "74.21%"); methods are sketched not detailed.
-     - **fidelity: medium** — key numbers survive in rounded or narrativized form; methods are mentioned but not instruction-manual precise.
-     - **fidelity: high** — exact figures stay exact where possible; methods remain intact and traceable.
-     - **integration: low** — story is window-dressing around explanations; characters observe the science more than live it.
-     - **integration: medium** — science and story interleave; characters discuss findings in narrative scenes.
-     - **integration: high** — the science IS the plot; characters discover results in real time; the reader learns as the characters learn, through action and consequence.
 9. Write `PLAN/chapter_plan_index.md` mapping sections to plan files.
 10. Update `workspace/CHECKLISTS/pipeline_checklist.md`:
    - Find/replace the Step F line to `[X]` with started and completed timestamps.
