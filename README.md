@@ -1,4 +1,4 @@
-# From Paper to Page
+# From Paper to Narrative
 
 > *Technical papers are exact. But reading them feels like friction. So we borrowed from fiction.*
 
